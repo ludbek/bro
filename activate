@@ -1,0 +1,48 @@
+#!/bin/sh
+function init() {
+  if test "$WORKSTATION" = ""; then
+    export WORKSTATION='~/projects'
+  fi
+
+  if test "$BRO_STATION" = ""; then
+    export BRO_STATION='~/bro'
+  fi
+}
+
+function usage() {
+  echo "bro <command> <mission>"
+}
+
+function launch() {
+  echo "launching $1"
+}
+
+function start() {
+  echo "starting new mission $1"
+}
+
+function end() {
+  echo "ending the mission $1"
+}
+
+init
+
+function bro() {
+  cmd=$1
+  project_name=$2
+  
+  case $1 in
+    --help|-h)
+      usage
+      ;; 
+    launch)
+      launch $2
+      ;;
+    start)
+      start $2
+      ;;
+    end)
+      end $2
+      ;;
+  esac
+}
