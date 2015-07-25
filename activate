@@ -6,11 +6,22 @@ function init() {
   fi
 
   if [ "$BRO_STATION" = "" ]; then
-    export BRO_STATION=$HOME/bro
+    export BRO_STATION=$HOME/.bro
   fi
+
+  BRO_TEMPLATES_DIR="$BRO_STATION/templates"
 
   mkdir -p `expand $WORKSTATION`
   mkdir -p `expand $BRO_STATION`
+  mkdir -p `expand $BRO_TEMPLATES_DIR`
+
+  # create default template
+  default_template=$BRO_TEMPLATES_DIR/default
+  if [ ! -e $default_template ] ; then
+    echo "#!/bin/sh" > $default_template
+    printf "\n" >> $default_template
+    echo "echo \"Yo! add bootstrap commands at .bro file at this project root.\"" >> $default_template
+  fi
 }
 
 function expand(){
@@ -25,35 +36,52 @@ function usage() {
   printf "bro <command> <mission>"
 }
 
-function launch() {
+# launch a project
+function start() {
+  if [ "$1" == "" ] ; then
+    error "specify the project name to start."
+    return 1
+  fi
+
   project=$1
   project_reference=`expand "$BRO_STATION/$project"`
 
   # check if the project already exists
   if [ ! -e $project_reference ]; then
-    error "the project $1 does not exist.\n Create it with $ bro start $1"
+    error "the project \"$1\" does not exist.\n Create it with $ bro create $1"
     return 1
   fi
 
   source $project_reference
 }
 
-# starts a project
-function start() {
-
-  if [ "$1" = "" ]; then
-    read -p "The project name is: " project
-  else
-    project=$1
+# creates a project
+function create() {
+  if [ "$1" == "" ] ; then
+    error "specify the project name to create"
+    return 1
   fi
+
+  project=$1
 
   project_path=`expand "$WORKSTATION/$project"`
   project_reference=`expand "$BRO_STATION/$project"`
 
   # check if the project already exists
-  if [ -e $project_reference ]; then
-    error "the project $1 already exists"
+  if [ -e $project_reference ] ; then
+    error "the project \"$1\" already exists"
     return 1
+  fi
+
+  # set bro template
+  if [ "$2" = "" ] ; then
+    template='default'
+  else
+    if [ ! -e $BRO_STATION/templates/$2 ] ; then
+      error "the bro template \"$2\" does not exist. Please create one at $BRO_STATION/templates/"
+      return
+    fi
+    template=$2
   fi
 
   # if this project is fresh
@@ -67,15 +95,20 @@ function start() {
   ## create project directory at workstation
   mkdir -p $project_path
   
-  if [ ! -e "$project_path/.bro" ]; then
-    touch "$project_path/.bro"
-  fi
+  ## copy bro template to project directory
+  cp $BRO_STATION/templates/$template $project_path/.bro
+  chmod +x $project_path/.bro
   ## launch the project
-  
   source $project_reference
 }
 
-function end() {
+# remove a project
+function remove() {
+  if [ "$1" == "" ] ; then
+    error "specify the project name to remove"
+    return 1
+  fi
+
   project=$1
   project_path=`expand "$WORKSTATION/$project"`
   project_reference=`expand "$BRO_STATION/$project"`
@@ -111,14 +144,15 @@ function bro() {
     --help|-h)
       usage
       ;; 
-    launch)
-      launch $2
-      ;;
     start)
       start $2
       ;;
-    end)
-      end $2
+    create)
+      shift
+      create $@
+      ;;
+    remove)
+      remove $2
       ;;
     *)
       usage
