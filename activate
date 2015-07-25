@@ -10,10 +10,12 @@ function bro_init {
   fi
 
   BRO_TEMPLATES_DIR="$BRO_STATION/templates"
+  BRO_PROJECT_REFERENCE_DIR="$BRO_STATION/projects"
 
   mkdir -p `bro_expand $WORKSTATION`
   mkdir -p `bro_expand $BRO_STATION`
   mkdir -p `bro_expand $BRO_TEMPLATES_DIR` 
+  mkdir -p `bro_expand $BRO_PROJECT_REFERENCE_DIR`
 }
 
 function bro_expand {
