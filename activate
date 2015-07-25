@@ -18,7 +18,7 @@ function expand(){
 }
 
 function error() {
-  printf "Yo! $1."
+  printf "Yo! $1.\n"
 }
 
 function usage() {
@@ -40,17 +40,19 @@ function launch() {
 
 # starts a project
 function start() {
+
   if [ "$1" = "" ]; then
-    echo "The project name is:"
-    read project
+    read -p "The project name is: " project
+  else
+    project=$1
   fi
-  project=$1
+
   project_path=`expand "$WORKSTATION/$project"`
   project_reference=`expand "$BRO_STATION/$project"`
 
   # check if the project already exists
   if [ -e $project_reference ]; then
-    error "the project $1 already exists."
+    error "the project $1 already exists"
     return 1
   fi
 
@@ -74,7 +76,29 @@ function start() {
 }
 
 function end() {
-  echo "ending the mission $1"
+  project=$1
+  project_path=`expand "$WORKSTATION/$project"`
+  project_reference=`expand "$BRO_STATION/$project"`
+
+  # check if the project already exists
+  if [ ! -e $project_reference ]; then
+    error "the project $1 does not exist."
+    return 1
+  fi
+
+  echo "Yo! are sure you wanna remove $project?"
+  echo "This will remove the project directory as well."
+  read -p "Do you still wish to continue? (y/n):" confirm
+
+  if [ $confirm = "" ] || [ $confirm = "y" ] || [ $confirm = "Y" ]; then
+    rm $project_reference
+    rm -rf $project_path
+    
+    echo "Successfully removed project $project."
+    return 0
+  else
+    echo "Aborting operation for good !!!"
+  fi
 }
 
 init
