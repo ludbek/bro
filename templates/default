@@ -1,0 +1,3 @@
+#!/bin/sh
+
+echo "Yo! add bootstrap commands at .bro file at this project root."

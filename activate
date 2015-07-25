@@ -11,17 +11,9 @@ function bro_init {
 
   BRO_TEMPLATES_DIR="$BRO_STATION/templates"
 
-  mkdir -p `expand $WORKSTATION`
-  mkdir -p `expand $BRO_STATION`
-  mkdir -p `expand $BRO_TEMPLATES_DIR`
-
-  # create default template
-  default_template=$BRO_TEMPLATES_DIR/default
-  if [ ! -e $default_template ] ; then
-    echo "#!/bin/sh" > $default_template
-    printf "\n" >> $default_template
-    echo "echo \"Yo! add bootstrap commands at .bro file at this project root.\"" >> $default_template
-  fi
+  mkdir -p `bro_expand $WORKSTATION`
+  mkdir -p `bro_expand $BRO_STATION`
+  mkdir -p `bro_expand $BRO_TEMPLATES_DIR` 
 }
 
 function bro_expand {
@@ -39,16 +31,16 @@ function bro_usage {
 # launch a project
 function bro_start {
   if [ "$1" == "" ] ; then
-    error "specify the project name to start."
+    bro_error "specify the project name to start."
     return 1
   fi
 
   project=$1
-  project_reference=`expand "$BRO_STATION/$project"`
+  project_reference=`bro_expand "$BRO_STATION/projects/$project"`
 
   # check if the project already exists
   if [ ! -e $project_reference ]; then
-    error "the project \"$1\" does not exist.\n Create it with $ bro create $1"
+    bro_error "the project \"$1\" does not exist.\n Create it with $ bro create $1"
     return 1
   fi
 
@@ -58,18 +50,18 @@ function bro_start {
 # creates a project
 function bro_create {
   if [ "$1" == "" ] ; then
-    error "specify the project name to create"
+    bro_error "specify the project name to create"
     return 1
   fi
 
   project=$1
 
-  project_path=`expand "$WORKSTATION/$project"`
-  project_reference=`expand "$BRO_STATION/$project"`
+  project_path=`bro_expand "$WORKSTATION/$project"`
+  project_reference=`bro_expand "$BRO_STATION/projects/$project"`
 
   # check if the project already exists
   if [ -e $project_reference ] ; then
-    error "the project \"$1\" already exists"
+    bro_error "the project \"$1\" already exists"
     return 1
   fi
 
@@ -78,7 +70,7 @@ function bro_create {
     template='default'
   else
     if [ ! -e $BRO_STATION/templates/$2 ] ; then
-      error "the bro template \"$2\" does not exist. Please create one at $BRO_STATION/templates/"
+      bro_error "the bro template \"$2\" does not exist. Please create one at $BRO_STATION/templates/"
       return
     fi
     template=$2
@@ -105,17 +97,17 @@ function bro_create {
 # remove a project
 function bro_remove {
   if [ "$1" == "" ] ; then
-    error "specify the project name to remove"
+    bro_error "specify the project name to remove"
     return 1
   fi
 
   project=$1
-  project_path=`expand "$WORKSTATION/$project"`
-  project_reference=`expand "$BRO_STATION/$project"`
+  project_path=`bro_expand "$WORKSTATION/$project"`
+  project_reference=`bro_expand "$BRO_STATION/projects/$project"`
 
   # check if the project already exists
   if [ ! -e $project_reference ]; then
-    error "the project $1 does not exist."
+    bro_error "the project $1 does not exist."
     return 1
   fi
 
@@ -142,7 +134,7 @@ function bro {
   
   case $1 in
     --help|-h)
-      usage
+      bro_usage
       ;; 
     start)
       bro_start $2
