@@ -1,12 +1,24 @@
 #!/bin/sh
+
 function init() {
-  if test "$WORKSTATION" = ""; then
-    export WORKSTATION='~/projects'
+  if [ "$WORKSTATION" = "" ]; then
+    export WORKSTATION=$HOME/projects
   fi
 
-  if test "$BRO_STATION" = ""; then
-    export BRO_STATION='~/bro'
+  if [ "$BRO_STATION" = "" ]; then
+    export BRO_STATION=$HOME/bro
   fi
+
+  mkdir -p `expand $WORKSTATION`
+  mkdir -p `expand $BRO_STATION`
+}
+
+function expand(){
+  echo `sh -c "echo $1"`
+}
+
+function error() {
+  echo "Yo! $1."
 }
 
 function usage() {
@@ -17,8 +29,38 @@ function launch() {
   echo "launching $1"
 }
 
+# starts a project
 function start() {
-  echo "starting new mission $1"
+  if [ "$1" = "" ]; then
+    echo "The project name is:"
+    read project
+  fi
+  project=$1
+  project_path=`expand "$WORKSTATION/$project"`
+  project_reference=`expand "$BRO_STATION/$project"`
+
+  # check if the project already exists
+  if [ -e $project_reference ]; then
+    error "the project $1 already exists"
+  fi
+
+  # if this project is fresh
+  ## create a script at BRO_STATION which cds to the project directory
+  cmd="cd $WORKSTATION/$project"
+  echo "#!/bin/sh" > $project_reference
+  echo $cmd >> $project_reference
+  echo "source .bro" >> $project_reference
+  chmod +x $project_reference
+
+  ## create project directory at workstation
+  mkdir -p $project_path
+  
+  if [ ! -e "$project_path/.bro" ]; then
+    touch "$project_path/.bro"
+  fi
+  ## launch the project
+  
+  source $project_reference
 }
 
 function end() {
@@ -44,5 +86,7 @@ function bro() {
     end)
       end $2
       ;;
+    *)
+      usage
   esac
 }
