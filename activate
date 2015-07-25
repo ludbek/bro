@@ -25,13 +25,37 @@ function bro_error {
 }
 
 function bro_usage {
-  printf "bro <command> <mission>"
+  echo "Usage: bro <subcommand>"
+  echo "Available subcommands are:"
+  echo "  create     Create a new project."
+  echo "  remove     Delete an existing project."
+  echo "  workon     Work on an existing project."
+  echo "  list       List available projects to work on."
+  echo "Try 'bro <subcommand>' for details."
 }
 
+
+function bro_create_usage {
+  echo "Usage: bro create <project> [template]"
+  echo "  project     Name of the project to be created."
+  echo "  template    [Optional] Name of the template to be used as .brofile file."
+}
+
+function bro_remove_usage {
+  echo "Usage: bro remove <project>"
+  echo "  project     Name of the project to be removed."
+}
+
+function bro_workon_usage {
+  echo "Usage: bro workon <project>"
+  echo "  project     Name of the project to be launched."
+}
+
+
 # launch a project
-function bro_start {
+function bro_workon {
   if [ "$1" == "" ] ; then
-    bro_error "specify the project name to start."
+    bro_workon_usage
     return 1
   fi
 
@@ -50,7 +74,7 @@ function bro_start {
 # creates a project
 function bro_create {
   if [ "$1" == "" ] ; then
-    bro_error "specify the project name to create"
+    bro_create_usage
     return 1
   fi
 
@@ -81,15 +105,15 @@ function bro_create {
   cmd="cd $WORKSTATION/$project"
   echo "#!/bin/sh" > $project_reference
   echo $cmd >> $project_reference
-  echo "source .bro" >> $project_reference
+  echo "source .brofile" >> $project_reference
   chmod +x $project_reference
 
   ## create project directory at workstation
   mkdir -p $project_path
   
   ## copy bro template to project directory
-  cp $BRO_STATION/templates/$template $project_path/.bro
-  chmod +x $project_path/.bro
+  cp $BRO_STATION/templates/$template $project_path/.brofile
+  chmod +x $project_path/.brofile
   ## launch the project
   source $project_reference
 }
@@ -97,7 +121,7 @@ function bro_create {
 # remove a project
 function bro_remove {
   if [ "$1" == "" ] ; then
-    bro_error "specify the project name to remove"
+    bro_remove_usage
     return 1
   fi
 
@@ -133,11 +157,8 @@ function bro {
   project_name=$2
   
   case $1 in
-    --help|-h)
-      bro_usage
-      ;; 
-    start)
-      bro_start $2
+    workon)
+      bro_workon $2
       ;;
     create)
       shift
