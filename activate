@@ -150,6 +150,13 @@ function bro_remove {
   fi
 }
 
+
+# list available projects
+function bro_list {
+  project_reference=`bro_expand "$BRO_STATION/projects/"`
+  echo `ls $project_reference`
+}
+
 bro_init
 
 function bro {
@@ -166,6 +173,9 @@ function bro {
       ;;
     remove)
       bro_remove $2
+      ;;
+    list)
+      bro_list
       ;;
     *)
       bro_usage
