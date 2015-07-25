@@ -1,6 +1,6 @@
 #!/bin/sh
 
-function init() {
+function bro_init {
   if [ "$WORKSTATION" = "" ]; then
     export WORKSTATION=$HOME/projects
   fi
@@ -24,20 +24,20 @@ function init() {
   fi
 }
 
-function expand(){
+function bro_expand {
   echo `sh -c "echo $1"`
 }
 
-function error() {
+function bro_error {
   printf "Yo! $1.\n"
 }
 
-function usage() {
+function bro_usage {
   printf "bro <command> <mission>"
 }
 
 # launch a project
-function start() {
+function bro_start {
   if [ "$1" == "" ] ; then
     error "specify the project name to start."
     return 1
@@ -56,7 +56,7 @@ function start() {
 }
 
 # creates a project
-function create() {
+function bro_create {
   if [ "$1" == "" ] ; then
     error "specify the project name to create"
     return 1
@@ -103,7 +103,7 @@ function create() {
 }
 
 # remove a project
-function remove() {
+function bro_remove {
   if [ "$1" == "" ] ; then
     error "specify the project name to remove"
     return 1
@@ -134,9 +134,9 @@ function remove() {
   fi
 }
 
-init
+bro_init
 
-function bro() {
+function bro {
   cmd=$1
   project_name=$2
   
@@ -145,16 +145,16 @@ function bro() {
       usage
       ;; 
     start)
-      start $2
+      bro_start $2
       ;;
     create)
       shift
-      create $@
+      bro_create $@
       ;;
     remove)
-      remove $2
+      bro_remove $2
       ;;
     *)
-      usage
+      bro_usage
   esac
 }
