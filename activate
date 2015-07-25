@@ -18,15 +18,24 @@ function expand(){
 }
 
 function error() {
-  echo "Yo! $1."
+  printf "Yo! $1."
 }
 
 function usage() {
-  echo "bro <command> <mission>"
+  printf "bro <command> <mission>"
 }
 
 function launch() {
-  echo "launching $1"
+  project=$1
+  project_reference=`expand "$BRO_STATION/$project"`
+
+  # check if the project already exists
+  if [ ! -e $project_reference ]; then
+    error "the project $1 does not exist.\n Create it with $ bro start $1"
+    return 1
+  fi
+
+  source $project_reference
 }
 
 # starts a project
@@ -41,7 +50,8 @@ function start() {
 
   # check if the project already exists
   if [ -e $project_reference ]; then
-    error "the project $1 already exists"
+    error "the project $1 already exists."
+    return 1
   fi
 
   # if this project is fresh
