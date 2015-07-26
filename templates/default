@@ -1,3 +1,16 @@
 #!/bin/sh
 
-echo "Yo! add bootstrap commands at .brofile at this project root."
+case $1 in
+  setup)
+    echo ".brofile: Nothing to setup."
+    ;;
+  boot)
+    source .brofile workon
+    echo ".brofile: Edit this section to launch necessary tools for the project."
+    ;;
+  workon)
+    echo ".brofile: Edit this section to set appropriate environment for the project."
+    ;;
+  *)
+    echo "Unknown command." 
+ esac
