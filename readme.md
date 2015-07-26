@@ -54,4 +54,13 @@ Bootstraping Project
       gvim &
       # lauch a file manager
       nemo &
+
+Configuration
+  Specify project directory
+    Set the directory where Bro saves the projects.
+      $ export WORKSTATION=~/path/to/project/directory/
+
+  Specify Bro directory
+    Set where Bro files will reside.
+      $ export BRO_STATION=/path/to/bro-directory/
 ```  
