@@ -1,6 +1,6 @@
 #!/bin/sh
 
-function bro_init {
+bro_init () {
   if [ "$WORKSTATION" = "" ]; then
     export WORKSTATION=$HOME/projects
   fi
@@ -16,15 +16,15 @@ function bro_init {
   mkdir -p `bro_expand $BRO_TEMPLATES_DIR` 
 }
 
-function bro_expand {
+bro_expand () {
   echo `sh -c "echo $1"`
 }
 
-function bro_error {
+bro_error () {
   printf "Yo! $1.\n"
 }
 
-function bro_usage {
+bro_usage () {
   echo "Usage: bro <subcommand>"
   echo "Available subcommands are:"
   echo "  create     Create a new project."
@@ -35,26 +35,26 @@ function bro_usage {
 }
 
 
-function bro_create_usage {
+bro_create_usage () {
   echo "Usage: bro create <project> [template]"
   echo "  project     Name of the project to be created."
   echo "  template    [Optional] Name of the template to be used as .brofile file."
 }
 
 
-function bro_remove_usage {
+bro_remove_usage () {
   echo "Usage: bro remove <project>"
   echo "  project     Name of the project to be removed."
 }
 
 
-function bro_workon_usage {
+bro_workon_usage () {
   echo "Usage: bro workon <project>"
   echo "  project     Name of the project to work on."
 }
 
 
-function bro_boot_usage {
+bro_boot_usage () {
   echo "Usage: bro boot <project>"
   echo "  project     Name of the project to boot."
 }
@@ -62,7 +62,7 @@ function bro_boot_usage {
 
 # setup a project
 # like installing dependencies, git, preparing project structure etc
-function bro_setup {
+bro_setup () {
   project=$1
   project_path=`bro_expand "$WORKSTATION/$project"`
   
@@ -72,7 +72,7 @@ function bro_setup {
 
 
 # prepare environment, launch tools like text editor, browser, etc.
-function bro_boot {
+bro_boot () {
   if [ "$1" == "" ] ; then
     bro_boot_usage
     return 1
@@ -93,7 +93,7 @@ function bro_boot {
 
 
 # jump to project directory and initialize necessary environment
-function bro_workon {
+bro_workon () {
   if [ "$1" == "" ] ; then
     bro_workon_usage
     return 1
@@ -114,7 +114,7 @@ function bro_workon {
 
 
 # creates a project
-function bro_create {
+bro_create () {
   if [ "$1" == "" ] ; then
     bro_create_usage
     return 1
@@ -156,7 +156,7 @@ function bro_create {
 }
 
 # remove a project
-function bro_remove {
+bro_remove () {
   if [ "$1" == "" ] ; then
     bro_remove_usage
     return 1
@@ -187,13 +187,13 @@ function bro_remove {
 
 
 # list available projects
-function bro_list {
+bro_list () {
   echo `ls $WORKSTATION`
 }
 
 bro_init
 
-function bro {
+bro () {
   cmd=$1
   project_name=$2
   
