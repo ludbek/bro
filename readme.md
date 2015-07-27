@@ -1,7 +1,7 @@
 ```
 About
-  A generic project management tool. Create, jump and bootstrap projects for 
-  any language.
+  A generic project management tool for any languages.
+
 
 Installation
   Clone this repo at your home directory with the name '.bro' and add it to 
@@ -11,18 +11,33 @@ Installation
   $ echo "source ~/.bro/activate" >> ~/.bashrc
   $ source ~/.bashrc
 
+
 Commands
   Create new project
-    $ bro create awesome_project
+    $ bro create awesome_project brofile_template
     
     Creates a directory named 'awesome_project' at default project directory which
-    is at '~/projects'.
-    CDs TO 'awesome_project' and bootstraps it using '.brofile'.
+    is at '~/projects'. It also places a '.brofile' inside the 'awesome_project'.
+    '.brofile' is simply a shell script which is executed by Bro everytime the project
+    starts. 'bro create' executes commands at 'setup' section in a '.brofile'.
+   
+    brofile_template is optional. If present, it is the name of one the templates at
+    '.bro/templates' directory. These templates are used for creating '.brofile'
+    for a project. Clone and modify the default template to meet your need. One can
+    have different templates for different kinds of projects.
 
-  Work on existing project
+  Kickstart an existing project
+    $ bro boot awesome_project
+    
+    Boots a project. It executes commands at 'boot' section in a '.brofile'.
+    Use this command to start working on an existing project and launch
+    necessary tools for working on it.
+
+  Work on project which has been booted
     $ bro workon awesome_project
     
-    CDs to 'awesome_project' and bootstraps it using '.brofile' in it.
+    Once the project has been kickstarted, use this command for every new terminal.
+    It executes commands at 'workon' section in a '.brofile'.
 
   Remove existing project
     $ bro remove awesome_project
@@ -32,28 +47,12 @@ Commands
   List projects
     $ bro list
 
-Bootstraping Project
-  Every new project has '.brofile' in it. Which is executed by Bro everytime the 
-  project is started with 'bro workon' command. Add necessary bash command to it.
-  One could put commands to activate virtual environments, launch text editor and
-  others.
-   
-  Example .brofile contents
-    Node
-      nvm use v0.10.38
 
-    Python
-      source .env/bin/activate
-
-    Or
-      # use appropriate environment
-      nvm use v0.10.38
-      # launch a browser     
-      firefox &
-      # lauch a text editor 
-      gvim &
-      # lauch a file manager
-      nemo &
+Brofile
+  .brofile is a shell script which is executed during project creation and boot up.
+  It is created from templates at 'template/' directory. One can easily extend
+  'default' .brofile template.
+  
 
 Configuration
   Specify project directory

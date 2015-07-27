@@ -2,14 +2,38 @@
 
 case $1 in
   setup)
-    echo ".brofile: Nothing to setup."
+    # Edit this section for setting up a project.
+    # Commands here are executed only during project creation.
+    # 'bro create <project>' executes commands here.
+
+    # for node
+    #   npm init
+    
+    # for python
+    #   virtulenv .env
     ;;
   boot)
+    # Edit this section to launch necessary tools for a project.
+    # Commands here are the first to be executed during project startup.
+    # 'bro boot <project>' executes commands here.
+
     source .brofile workon
-    echo ".brofile: Edit this section to launch necessary tools for the project."
+
+    # launch necessary tools
+    # atom &
+    # firefox &
+    # nemo &
     ;;
   workon)
-    echo ".brofile: Edit this section to set appropriate environment for the project."
+    # Edit this section to set appropriate environment for the project."
+    # Commands here are to be executed for every new terminals.
+    # 'bro workon <project>' executes commands here.
+
+    # for node
+    #   nvm use v0.10.38
+
+    # for python
+    #   source .env/bin/activate
     ;;
   *)
     echo "Unknown command." 
