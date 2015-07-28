@@ -28,9 +28,10 @@ bro_usage () {
   echo "Usage: bro <subcommand>"
   echo "Available subcommands are:"
   echo "  create     Create a new project."
-  echo "  remove     Delete an existing project."
-  echo "  workon     Work on an existing project."
   echo "  list       List available projects to work on."
+  echo "  boot       Boot a project."
+  echo "  workon     Work on an existing project."
+  echo "  remove     Delete an existing project."
   echo "Try 'bro <subcommand>' for details."
 }
 
@@ -67,7 +68,7 @@ bro_setup () {
   project_path=`bro_expand "$WORKSTATION/$project"`
   
   cd $project_path
-  source "$project_path/.brofile" setup
+  source "$project_path/.brofile" setup $project
 }
 
 
@@ -88,7 +89,7 @@ bro_boot () {
   fi
 
   cd $project_path
-  source "$project_path/.brofile" boot
+  source "$project_path/.brofile" boot $project
 }
 
 
@@ -109,7 +110,7 @@ bro_workon () {
   fi
 
   cd $project_path
-  source "$project_path/.brofile" workon
+  source "$project_path/.brofile" workon $project
 }
 
 
@@ -151,8 +152,6 @@ bro_create () {
 
   ## setup project
   bro_setup $project
-  ## boot project
-  bro_boot $project
 }
 
 # remove a project

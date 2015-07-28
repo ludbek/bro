@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# $1 is subcommand
+# $2 is project name
+
 case $1 in
   setup)
     # Edit this section for setting up a project.
@@ -11,6 +14,9 @@ case $1 in
     
     # for python
     #   virtulenv .env
+
+    # boot project
+    source .brofile boot
     ;;
   boot)
     # Edit this section to launch necessary tools for a project.
