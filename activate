@@ -194,24 +194,24 @@ bro_init
 
 bro () {
   cmd=$1
-  project_name=$2
+  project=$2
   
-  case $1 in
+  case $cmd in
     workon)
-      bro_workon $2
+      bro_workon $project
       ;;
     create)
       shift
       bro_create $@
       ;;
     remove)
-      bro_remove $2
+      bro_remove $project
       ;;
     list)
       bro_list
       ;;
     boot)
-      bro_boot $2
+      bro_boot $project
       ;;
     *)
       bro_usage
