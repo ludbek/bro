@@ -8,15 +8,15 @@ case $1 in
     # Edit this section for setting up a project.
     # Commands here are executed only during project creation.
     # 'bro create <project>' executes commands here.
-
+    
     # git
-    # git init
+    git init
 
     # for node
     #   npm init
     
     # for python
-    #   virtulenv .env
+    virtualenv --python=python2 .env
 
     # boot project
     source .brofile boot
@@ -42,7 +42,7 @@ case $1 in
     #   nvm use v0.10.38
 
     # for python
-    #   source .env/bin/activate
+    source .env/bin/activate
     ;;
   *)
     echo "Unknown command." 
