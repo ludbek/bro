@@ -11,6 +11,8 @@ case $1 in
 
     # git
     git init
+    echo '.brofile' >> .gitignore
+    echo '.env' >> .gitignore
 
     # for node
     #   npm init

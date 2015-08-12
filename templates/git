@@ -10,8 +10,9 @@ case $1 in
     # 'bro create <project>' executes commands here.
 
     # git
-    # git init
-    # echo ".brofile" >> .gitignore
+    git init
+    echo '.brofile' >> .gitignore
+    echo '.env' >> .gitignore
 
     # for node
     #   npm init
