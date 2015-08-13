@@ -1,6 +1,6 @@
 ```
 About
-  A generic project management tool for any languages.
+  A generic project management tool.
 
 
 Installation
