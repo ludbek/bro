@@ -1,0 +1,43 @@
+#!/bin/sh
+
+bro_expand () {
+  echo `sh -c "echo $1"`
+}
+
+if [ "$WORKSTATION" = "" ]; then
+    read -p "Project directory? ($HOME/projects):" WORKSTATION
+
+    if [ "$WORKSTATION" = "" ]; then
+        WORKSTATION="$HOME/projects"
+    fi
+
+    # Installing for the first time
+    mkdir -p `bro_expand $WORKSTATION`
+
+    echo "\n### Bro" >> ~/.bashrc
+    echo "export WORKSTATION=$WORKSTATION" >> ~/.bashrc
+fi
+
+if [ "$BRO_STATION" = "" ]; then
+    read -p "Bro directory? ($HOME/.bro):" BRO_STATION
+
+    if [ "$BRO_STATION" = "" ]; then
+        BRO_STATION="$HOME/.bro"
+    fi
+
+    mkdir -p `bro_expand $BRO_STATION`
+
+    ACTIVATE=$BRO_STATION/activate
+    echo "export BRO_STATION=$BRO_STATION" >> ~/.bashrc
+    echo "source $ACTIVATE" >> ~/.bashrc
+fi
+
+
+# earlier version of bro exists remove it
+if [ -e $BRO_STATION ] ; then
+    rm -r `bro_expand $BRO_STATION`
+fi
+
+# copy new version of bro to $BRO_STATION
+mkdir `bro_expand $BRO_STATION`
+cp -r ./* `bro_expand $BRO_STATION`
