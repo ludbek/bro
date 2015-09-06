@@ -7,8 +7,9 @@ Installation
   Clone this repo at your home directory with the name '.bro' and add it to 
   system path.
 
-  $ git clone git@github.com:ludbek/bro.git ~/.bro
-  $ echo "source ~/.bro/activate" >> ~/.bashrc
+  $ git clone git@github.com:ludbek/bro.git
+  $ cd bro
+  $ ./install
   $ source ~/.bashrc
 
 
