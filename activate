@@ -9,7 +9,7 @@ bro_error () {
 }
 
 bro_usage () {
-  echo "Usage: bro <subcommand>"
+  echo "Usage: bro <subcommand> [<brofile_name>]"
   echo "Available subcommands are:"
   echo "  create     Create a new project."
   echo "  list       List available projects to work on."
@@ -17,6 +17,7 @@ bro_usage () {
   echo "  workon     Work on an existing project."
   echo "  remove     Delete an existing project."
   echo "Try 'bro <subcommand>' for details."
+  echo "<brofile_name> is a template at BRO_STATION/templates/ directory."
 }
 
 
