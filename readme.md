@@ -4,8 +4,7 @@ About
 
 
 Installation
-  Clone this repo at your home directory with the name '.bro' and add it to 
-  system path.
+  Clone this repo and execute the 'install' script.
 
   $ git clone git@github.com:ludbek/bro.git
   $ cd bro
