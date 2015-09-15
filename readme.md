@@ -62,4 +62,9 @@ Configuration
   Specify Bro directory
     Set where Bro files will reside.
       $ export BRO_STATION=/path/to/bro-directory/
+      
+
+TODO
+  - Create project from a git repo
+  - Specify project path while creating a new one
 ```  
