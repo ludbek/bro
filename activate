@@ -5,7 +5,7 @@ bro_expand () {
 }
 
 bro_error () {
-  printf "Yo! $1.\n"
+  printf "Aye! $1.\n"
 }
 
 bro_usage () {
@@ -21,9 +21,11 @@ bro_usage () {
 
 
 bro_create_usage () {
-  echo "Usage: bro create <project> [template]"
+  echo "Usage: bro create [-t template -p path -r repo] project"
   echo "  project     Name of the project to be created."
-  echo "  template    [Optional] Name of the template to be used as .brofile file."
+  echo "  template    Name of one of the templates at templates/ directory."
+  echo "  path        Absolute/relative path where the project directory is to be created."
+  echo "  repo        URL of existing git repository."
 }
 
 
@@ -49,8 +51,15 @@ bro_boot_usage () {
 # like installing dependencies, git, preparing project structure etc
 bro_setup () {
   project=$1
-  project_path=`bro_expand "$WORKSTATION/$project"`
+  project_reference=`bro_expand "$BRO_STATION/projects/$project"`
 
+  # check if the project exists
+  if [ ! -e "$project_reference" ]; then
+    bro_error "the project \"$project\" does not exist.\n Create it with $ bro create $1"
+    return 1
+  fi
+
+  project_path=`bro_expand $(sed '1p' $project_reference)`
   cd $project_path
   source "$project_path/.brofile" setup $project
 }
@@ -64,14 +73,15 @@ bro_boot () {
   fi
 
   project=$1
-  project_path=`bro_expand "$WORKSTATION/$project"`
+  project_reference=`bro_expand "$BRO_STATION/projects/$project"`
 
   # check if the project exists
-  if [ ! -e "$project_path/.brofile" ]; then
-    bro_error "the project \"$1\" does not exist.\n Create it with $ bro create $1"
+  if [ ! -e "$project_reference" ]; then
+    bro_error "the project \"$project\" does not exist.\n Create it with $ bro create $1"
     return 1
   fi
 
+  project_path=`bro_expand $(sed '1p' $project_reference)`
   cd $project_path
   source "$project_path/.brofile" boot $project
 }
@@ -85,14 +95,15 @@ bro_workon () {
   fi
 
   project=$1
-  project_path=`bro_expand "$WORKSTATION/$project"`
+  project_reference=`bro_expand "$BRO_STATION/projects/$project"`
 
   # check if the project exists
-  if [ ! -e "$project_path/.brofile" ]; then
-    bro_error "the project \"$1\" does not exist.\n Create it with $ bro create $1"
+  if [ ! -e "$project_reference" ]; then
+    bro_error "the project \"$project\" does not exist.\n Create it with $ bro create $1"
     return 1
   fi
 
+  project_path=`bro_expand $(sed '1p' $project_reference)`
   cd $project_path
   source "$project_path/.brofile" workon $project
 }
@@ -100,39 +111,70 @@ bro_workon () {
 
 # creates a project
 bro_create () {
-  if [ "$1" == "" ] ; then
+  local OPTIND template path repo opt project_path project_reference
+
+  while getopts :t:p:r: opt; do
+    case  $opt in
+      t) template=$OPTARG;;
+      p) path=$OPTARG;;
+      r) repo=$OPTARG;;
+      *) echo "Invalid option: -" $OPTARG;;
+    esac
+  done
+
+  ## get project name
+  shift $(($OPTIND-1))
+  project=$@
+
+  if [ "$project" = "" ] ; then
+    bro_error "you missed the project name"
     bro_create_usage
     return 1
   fi
 
-  project=$1
-
-  project_path=`bro_expand "$WORKSTATION/$project"`
+  ## set project path
+  if [ "$path" = "" ] ; then
+    project_path=`bro_expand "$WORKSTATION/$project"`
+  else
+    if [ "$(echo $path | sed -n "/[~\/]/p")" = "" ] ; then
+      mkdir -p `bro_expand "$WORKSTATION/$path"`
+      project_path=`bro_expand "$WORKSTATION/$path/$project"`
+    else
+      project_path=`bro_expand "$path/$project"`
+    fi
+  fi
+  ## set project reference path
   project_reference=`bro_expand "$BRO_STATION/projects/$project"`
 
-  # check if the project already exists
+  ### check if the project already exists
   if [ -e $project_reference ] ; then
-    bro_error "the project \"$1\" already exists"
+    bro_error "the project \"$project\" already exists"
     return 1
   fi
 
-  # set bro template
-  if [ "$2" = "" ] ; then
+  ## set template
+  if [ "$template" = "" ] ; then
     template='default'
-  else
-    if [ ! -e $BRO_STATION/templates/$2 ] ; then
-      bro_error "the bro template \"$2\" does not exist. Please create one at $BRO_STATION/templates/"
-      return
-    fi
-    template=$2
   fi
 
-  ## create project directory at workstation
-  mkdir -p $project_path
+  if [ ! -e $BRO_STATION/templates/$template ] ; then
+    bro_error "the bro template \"$template\" does not exist. Please create one at $BRO_STATION/templates/"
+    return
+  fi
+
+  ## create project directory at specified path
+  if [ "$repo" = "" ] ; then
+    mkdir -p $project_path
+  else
+    git clone $repo $project_path
+  fi
 
   ## copy bro template to project directory
   cp $BRO_STATION/templates/$template $project_path/.brofile
   chmod +x $project_path/.brofile
+  ## create project reference file
+  touch $project_reference
+  echo "$project_path" > $project_reference
 
   ## setup project
   bro_setup $project
@@ -179,6 +221,8 @@ bro () {
   cmd=$1
   project=$2
 
+  # local OPTIND
+
   case $cmd in
     workon)
       bro_workon $project
@@ -198,5 +242,6 @@ bro () {
       ;;
     *)
       bro_usage
+      ;;
   esac
 }
