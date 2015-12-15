@@ -188,32 +188,34 @@ bro_remove () {
   fi
 
   project=$1
-  project_path=`bro_expand "$WORKSTATION/$project"`
+  project_reference=`bro_expand "$BRO_STATION/projects/$project"`
 
   # check if the project already exists
-  if [ ! -e "$project_path/.brofile" ]; then
-    bro_error "the project $1 does not exist"
+  if [ ! -e "$project_reference" ]; then
+    bro_error "the project \"$project\" does not exist"
     return 1
   fi
 
-  echo "Yo! are sure you wanna remove $project?"
-  echo "This will remove the project directory as well."
-  read -p "Do you still wish to continue? (Y/n):" confirm
+  rm -f $project_reference
 
-  if [ "$confirm" = "" ] || [ "$confirm" = "y" ] || [ "$confirm" = "Y" ]; then
-    rm -rf $project_path
+  # echo "Yo! are sure you wanna remove $project?"
+  # echo "This will remove the project directory as well."
+  # read -p "Do you still wish to continue? (Y/n):" confirm
 
-    echo "Successfully removed project $project."
-    return 0
-  else
-    echo "Aborting operation for good !!!"
-  fi
+  # if [ "$confirm" = "" ] || [ "$confirm" = "y" ] || [ "$confirm" = "Y" ]; then
+  #   rm -rf $project_path
+
+  #   echo "Successfully removed project $project."
+  #   return 0
+  # else
+  #   echo "Aborting operation for good !!!"
+  # fi
 }
 
 
 # list available projects
 bro_list () {
-  echo `ls $WORKSTATION`
+  echo `ls $BRO_STATION/projects/`
 }
 
 
