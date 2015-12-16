@@ -23,6 +23,7 @@ Path where the new project will be created. By default it is created at the defa
 as specificed by environment variable `WORKSTATION`.
 
 The path could be in following formats:
+
 1. `-p /absolute/path/to/project`
 2. `-p ~/path/to/project`
 3. `-p category`
@@ -71,5 +72,5 @@ Set where Bro files will reside.
 
 # TODO
 - Autocomplete commands and stuff.
-- ~~Create project from a git repo. ~~
-- ~~ Specify project path while creating a new one. ~~
+- ~~Create project from a git repo.~~
+- ~~Specify project path while creating a new one.~~
