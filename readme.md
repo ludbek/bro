@@ -1,5 +1,5 @@
 # About
-A generic project management tool.
+A generic project management tool. It takes you to project directory, sets environment, launches tools(IDE, browser, filemanger) and more.
 
 # Installation
 Clone this repo and execute the 'install' script.
@@ -8,12 +8,16 @@ Clone this repo and execute the 'install' script.
 $ git clone git@github.com:ludbek/bro.git
 $ cd bro
 $ ./install
+$ Project directory? ($HOME/projects):     # directory where Bro will store projects
+$ Bro directory? ($HOME/.bro):             # directory where Bro file will reside
 $ source ~/.bashrc
 ```
 
 # Commands
 ## Create new project
 `$ bro create [-t template -p path -r repo] project`
+
+The options are optional.
 
 ### -t
 Name of template file at `templates` directory which will be used for setting up the project.
@@ -35,20 +39,18 @@ URL of the remote git repo which will be used as the new project's blueprint.
 ## Kickstart an existing project
 `$ bro boot project`
 
-Boots a project. It executes commands at 'boot' section in a '.brofile'.
-Use this command to start working on an existing project and launch
-necessary tools for working on it.
+Boots a project. It executes commands at `boot` section in the `.brofile`.
+Use this command to launch tools necessary for the project. e.g. emulators, text editor, browser, etc.
 
 ## Work on project which has been booted
 `$ bro workon project`
 
-Once the project has been kickstarted, use this command for every new terminal.
-It executes commands at 'workon' section in a `.brofile`.
+Once the project has been booted, use this command for every new terminal. Useful for setting environment variables. It executes commands at `workon` section in the `.brofile` at a project directory.
 
 ## Remove existing project
 `$ bro remove project`
 
-Use it with caution. Deletes the specified project.
+~~Use it with caution.~~Unlinks the project. Bro won't remove the project directory. One has to manually remove it.
 
 ## List projects
 `$ bro list`
@@ -56,14 +58,14 @@ Use it with caution. Deletes the specified project.
 
 # Brofile
 `.brofile` is a shell script which is executed during project creation and boot up.
-It is created from templates at 'template/' directory. One can easily extend
-'default' .brofile template.
+It is created from templates at `templates/` directory. One can easily extend
+`default` brofile template.
 
 
 # Configuration
 ## Specify project directory
 Set the directory where Bro saves the projects.
-`$ export WORKSTATION=~/path/to/project/directory/`
+`$ export WORKSTATION=~/path/to/projects/directory/`
 
 ## Specify Bro directory
 Set where Bro files will reside.
