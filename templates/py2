@@ -8,17 +8,14 @@ case $1 in
     # Edit this section for setting up a project.
     # Commands here are executed only during project creation.
     # 'bro create <project>' executes commands here.
-    
+
     # git
     git init
     echo '.brofile' >> .gitignore
-    echo '.env' >> .gitignore
 
-    # for node
-    #   npm init
-    
-    # for python
+    # setup virtual environment
     virtualenv --python=python2 .env
+    echo '.env' >> .gitignore
 
     # boot project
     source .brofile boot
@@ -31,7 +28,7 @@ case $1 in
     source .brofile workon
 
     # launch necessary tools
-    # atom &
+    # subl &
     # firefox &
     # nemo &
     ;;
@@ -40,12 +37,9 @@ case $1 in
     # Commands here are to be executed for every new terminals.
     # 'bro workon <project>' executes commands here.
 
-    # for node
-    #   nvm use v0.10.38
-
-    # for python
+    # activate the virtual env
     source .env/bin/activate
     ;;
   *)
-    echo "Unknown command." 
+    echo "Unknown command."
  esac

@@ -9,13 +9,14 @@ case $1 in
     # Commands here are executed only during project creation.
     # 'bro create <project>' executes commands here.
 
+    echo "Make sure 'nvm' is installed. If not get it with 'npm install -g nvm'."
+
     # git
     git init
-    echo '.brofile' >> .gitignore
+    echo ".brofile" >> .gitignore
 
-    # setup virtual environment
-    virtualenv --python=python3 .env
-    echo '.env' >> .gitignore
+    # setup project
+    npm init
 
     # boot project
     source .brofile boot
@@ -37,8 +38,9 @@ case $1 in
     # Commands here are to be executed for every new terminals.
     # 'bro workon <project>' executes commands here.
 
-    # activate the virtual env
-    source .env/bin/activate
+    # setup node version
+    nvm use 4.2.3
+
     ;;
   *)
     echo "Unknown command."
