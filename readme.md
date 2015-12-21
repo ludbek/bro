@@ -20,7 +20,7 @@ $ source ~/.bashrc
 The options are optional.
 
 ### -t
-Name of template file at `templates` directory which will be used for setting up the project.
+Name of template file at `$BRO_STATION/templates/` directory which will be used for setting up the project. Checkout the templates at `templates` directory for deeper insight.
 
 ### -p
 Path where the new project will be created. By default it is created at the default directory
