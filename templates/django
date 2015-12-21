@@ -21,7 +21,6 @@ case $1 in
     # install django and create app
     pip install django
     django-admin startproject $2 .
-    python manage.py startapp app
 
     # boot project
     source .brofile boot
