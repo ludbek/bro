@@ -1,6 +1,9 @@
 # About
 A generic project management tool. It takes you to project directory, sets environment, launches tools(IDE, browser, filemanger) and more.
 
+# Requirements
+Linux or OSX.
+
 # Installation
 Clone this repo and execute the 'install' script.
 
