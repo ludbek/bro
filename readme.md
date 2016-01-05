@@ -77,5 +77,7 @@ Set where Bro files will reside.
 
 # TODO
 - Autocomplete commands and stuff.
+- Support custom commands.
+- Proxy tasks.
 - ~~Create project from a git repo.~~
 - ~~Specify project path while creating a new one.~~
