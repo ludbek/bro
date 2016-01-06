@@ -1,9 +1,11 @@
 #!/bin/sh
 
-# $1 is subcommand
-# $2 is project name
+project=$1
+shift
+full_cmd=$@
+task=$1
 
-case $1 in
+case $task in
   setup)
     # Edit this section for setting up a project.
     # Commands here are executed only during project creation.
@@ -20,14 +22,14 @@ case $1 in
     #   virtulenv .env
 
     # boot project
-    source .brofile boot
+    source .brofile $project boot
     ;;
   boot)
     # Edit this section to launch necessary tools for a project.
     # Commands here are the first to be executed during project startup.
     # 'bro boot <project>' executes commands here.
 
-    source .brofile workon
+    source .brofile $project workon
 
     # launch necessary tools
     # subl &
@@ -46,5 +48,5 @@ case $1 in
     #   source .env/bin/activate
     ;;
   *)
-    echo "Unknown command."
+    bro_usage
  esac
