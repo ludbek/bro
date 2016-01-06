@@ -30,6 +30,8 @@ case $1 in
     # Commands here are the first to be executed during project startup.
     # 'bro boot <project>' executes commands here.
 
+    source .brofile workon
+
     # launch necessary tools
     # subl &
     # firefox &

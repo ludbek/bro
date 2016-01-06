@@ -5,10 +5,10 @@ A generic project management tool. It takes you to project directory, sets envir
 Linux or OSX.
 
 # Installation
-Clone this repo and execute the 'install' script.
+Clone this repo and execute the `install` script.
 
 ```shell
-$ git clone git@github.com:ludbek/bro.git
+$ git clone https://github.com/ludbek/bro.git
 $ cd bro
 $ ./install
 $ Project directory? ($HOME/projects):     # directory where Bro will store projects
@@ -77,5 +77,7 @@ Set where Bro files will reside.
 
 # TODO
 - Autocomplete commands and stuff.
+- Support custom commands.
+- Proxy tasks.
 - ~~Create project from a git repo.~~
 - ~~Specify project path while creating a new one.~~
