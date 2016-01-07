@@ -9,13 +9,13 @@ bro_error () {
 }
 
 bro_usage () {
-  echo "Usage 1: bro <subcommand>"
+  echo "Project management: bro <subcommand>"
   echo "Available subcommands are:"
   echo "  create     Create a new project."
   echo "  list       List available projects to work on."
   echo "  remove     Delete an existing project."
   echo "Try 'bro <subcommand>' for details."
-  echo "Usage 2: bro <project> <task> [params]"
+  echo "Task execution: bro <project> <task> [params]"
   echo "  project    Project name."
   echo "  task       Task at .brofile."
   echo "  params     Parameters for the task."
