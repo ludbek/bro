@@ -1,5 +1,7 @@
 # About
-A generic project management tool. It takes you to project directory, sets environment, launches tools(IDE, browser, filemanger) and more.
+A generic project manager and task executer.
+It creates, lists and removes projects.
+It also executes tasks inside a project.
 
 # Requirements
 Linux or OSX.
@@ -39,17 +41,6 @@ The path could be in following formats:
 ### -r
 URL of the remote git repo which will be used as the new project's blueprint.
 
-## Kickstart an existing project
-`$ bro boot project`
-
-Boots a project. It executes commands at `boot` section in the `.brofile`.
-Use this command to launch tools necessary for the project. e.g. emulators, text editor, browser, etc.
-
-## Work on project which has been booted
-`$ bro workon project`
-
-Once the project has been booted, use this command for every new terminal. Useful for setting environment variables. It executes commands at `workon` section in the `.brofile` at a project directory.
-
 ## Remove existing project
 `$ bro remove project`
 
@@ -59,13 +50,36 @@ Once the project has been booted, use this command for every new terminal. Usefu
 `$ bro list`
 
 
+# Task Execution
+`bro [project] <task> [params]`
+
+Task is simply a switch case in `.brofile`.
+
+- project(optional) : Name of the project. The project name is not required if one is at the project's root directory.
+- task : A task inside the project.
+- params(optional) : Parameters passed to the project.
+
+
+## Default Tasks
+### boot
+`$ bro project boot`
+
+Boots a project. It executes task at `boot` section in the `.brofile`.
+Use this command to launch tools necessary for the project. e.g. emulators, text editor, browser, etc.
+
+### workon
+`$ bro project workon`
+
+Execute this task for every new terminal. Useful for setting environment variables. It executes commands at `workon` section in the `.brofile` at a project directory.
+
 # Brofile
-`.brofile` is a shell script which is executed during project creation and boot up.
+`.brofile` is a shell script which is executed during project creation and task execution.
 It is created from templates at `templates/` directory. One can easily extend
 `default` brofile template.
 
 
 # Configuration
+The values are set during installation.
 ## Specify project directory
 Set the directory where Bro saves the projects.
 `$ export WORKSTATION=~/path/to/projects/directory/`
@@ -77,7 +91,6 @@ Set where Bro files will reside.
 
 # TODO
 - Autocomplete commands and stuff.
-- Support custom commands.
-- Proxy tasks.
+- ~~Support custom commands(tasks).~~
 - ~~Create project from a git repo.~~
 - ~~Specify project path while creating a new one.~~
