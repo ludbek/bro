@@ -1,9 +1,10 @@
 #!/bin/sh
-
+# please do not edit codes below
 project=$1
+task=$2
 shift
 full_cmd=$@
-task=$1
+# please do not edit codes above
 
 case $task in
   setup)
@@ -20,14 +21,14 @@ case $task in
     echo '.env' >> .gitignore
 
     # boot project
-    source .brofile $project boot
+    bro boot
     ;;
   boot)
     # Edit this section to launch necessary tools for a project.
     # Commands here are the first to be executed during project startup.
     # 'bro <project> boot' executes commands here.
 
-    source .brofile $project workon
+    bro workon
 
     # launch necessary tools
     # subl &
