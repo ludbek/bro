@@ -15,15 +15,17 @@ bro_usage () {
   echo "  list       List available projects to work on."
   echo "  remove     Delete an existing project."
   echo "Try 'bro <subcommand>' for details."
-  echo "Task execution: bro <project> <task> [params]"
-  echo "  project    Project name."
+  echo "------------------------------------------------"
+  echo "Task execution: bro [project] <task> [params]"
+  echo "  project    Project name. (Not required inside project directory.)"
   echo "  task       Task at .brofile."
   echo "  params     Parameters for the task."
 }
 
+
 bro_task_usage () {
-  echo "Usage: bro <project> <task> [params]"
-  echo "  project    Project name."
+  echo "Usage: bro [project] <task> [params]"
+  echo "  project    Project name. (Not required inside project directory.)"
   echo "  task       Task at .brofile."
   echo "  params     Parameters for the task."
 }
@@ -62,8 +64,7 @@ bro_setup () {
 }
 
 
-# execute command at .brofile
-bro_task () {
+bro_remote_task () {
   # check for proper number of arguments
   # must have at least two arguments
   if [ "$#" == "1" ] ; then
@@ -83,7 +84,28 @@ bro_task () {
 
   project_path=`bro_expand $(sed '1p' $project_reference)`
   cd $project_path
+
   source "$project_path/.brofile" $@
+}
+
+bro_local_task () {
+  project=$(basename "`pwd`")
+  source ./.brofile $project $@
+}
+
+# execute command at .brofile
+bro_task () {
+  # distinguish remote and local task
+  possible_project=$1
+  project_reference=`bro_expand "$BRO_STATION/projects/$possible_project"`
+
+  if [[ $# == 1 ]] && [[ ! -f "`pwd`/.brofile" ]]; then
+    bro_usage
+  elif [[ ! -e "$project_reference" ]] && [[ -f "`pwd`/.brofile" ]]; then
+    bro_local_task $@
+  else
+    bro_remote_task $@
+  fi
 }
 
 
@@ -198,11 +220,15 @@ bro_list () {
 
 
 bro () {
+  if [ "$#" == "0" ] ; then
+    bro_usage
+    return 1
+  fi
+
   cmd=$1
   project=$2
 
   # local OPTIND
-
   case $cmd in
     create)
       shift

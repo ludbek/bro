@@ -1,9 +1,9 @@
 #!/bin/sh
 
 project=$1
+task=$2
 shift
 full_cmd=$@
-task=$1
 
 case $task in
   setup)
@@ -22,14 +22,14 @@ case $task in
     #   virtulenv .env
 
     # boot project
-    source .brofile $project boot
+    bro boot
     ;;
   boot)
     # Edit this section to launch necessary tools for a project.
     # Commands here are the first to be executed during project startup.
-    # 'bro <project> boot' executes commands here.
+    # 'bro [project] boot' executes commands here.
 
-    source .brofile $project workon
+    bro workon
 
     # launch necessary tools
     # subl &
@@ -39,7 +39,7 @@ case $task in
   workon)
     # Edit this section to set appropriate environment for the project."
     # Commands here are to be executed for every new terminals.
-    # 'bro <project> workon' executes commands here.
+    # 'bro [project] workon' executes commands here.
 
     # for node
     #   nvm use v0.10.38
@@ -48,5 +48,5 @@ case $task in
     #   source .env/bin/activate
     ;;
   *)
-    bro_usage
+    bro_task_usage
  esac
