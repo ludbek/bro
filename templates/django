@@ -23,7 +23,7 @@ case $task in
 
     # install django and create app
     pip install django
-    django-admin startproject $2 .
+    django-admin startproject $project .
 
     # boot project
     bro boot
