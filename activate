@@ -9,14 +9,25 @@ bro_error () {
 }
 
 bro_usage () {
-  echo "Usage: bro <subcommand>"
+  echo "Project management: bro <subcommand>"
   echo "Available subcommands are:"
   echo "  create     Create a new project."
   echo "  list       List available projects to work on."
-  echo "  boot       Boot a project."
-  echo "  workon     Work on an existing project."
   echo "  remove     Delete an existing project."
   echo "Try 'bro <subcommand>' for details."
+  echo "------------------------------------------------"
+  echo "Task execution: bro [project] <task> [params]"
+  echo "  project    Project name. (Not required inside project directory.)"
+  echo "  task       Task at .brofile."
+  echo "  params     Parameters for the task."
+}
+
+
+bro_task_usage () {
+  echo "Usage: bro [project] <task> [params]"
+  echo "  project    Project name. (Not required inside project directory.)"
+  echo "  task       Task at .brofile."
+  echo "  params     Parameters for the task."
 }
 
 
@@ -35,18 +46,6 @@ bro_remove_usage () {
 }
 
 
-bro_workon_usage () {
-  echo "Usage: bro workon <project>"
-  echo "  project     Name of the project to work on."
-}
-
-
-bro_boot_usage () {
-  echo "Usage: bro boot <project>"
-  echo "  project     Name of the project to boot."
-}
-
-
 # setup a project
 # like installing dependencies, git, preparing project structure etc
 bro_setup () {
@@ -61,51 +60,52 @@ bro_setup () {
 
   project_path=`bro_expand $(sed '1p' $project_reference)`
   cd $project_path
-  source "$project_path/.brofile" setup $project
+  source "$project_path/.brofile" $project setup
 }
 
 
-# prepare environment, launch tools like text editor, browser, etc.
-bro_boot () {
-  if [ "$1" == "" ] ; then
-    bro_boot_usage
+bro_remote_task () {
+  # check for proper number of arguments
+  # must have at least two arguments
+  if [ "$#" == "1" ] ; then
+    bro_task_usage
     return 1
   fi
 
+  # get project name
   project=$1
   project_reference=`bro_expand "$BRO_STATION/projects/$project"`
 
   # check if the project exists
   if [ ! -e "$project_reference" ]; then
-    bro_error "the project \"$project\" does not exist.\n Create it with $ bro create $1"
+    bro_error "the project \"$1\" does not exist.\n Create it with $ bro create $1"
     return 1
   fi
 
   project_path=`bro_expand $(sed '1p' $project_reference)`
   cd $project_path
-  source "$project_path/.brofile" boot $project
+
+  source "$project_path/.brofile" $@
 }
 
+bro_local_task () {
+  project=$(basename "`pwd`")
+  source ./.brofile $project $@
+}
 
-# jump to project directory and initialize necessary environment
-bro_workon () {
-  if [ "$1" == "" ] ; then
-    bro_workon_usage
-    return 1
+# execute command at .brofile
+bro_task () {
+  # distinguish remote and local task
+  possible_project=$1
+  project_reference=`bro_expand "$BRO_STATION/projects/$possible_project"`
+
+  if [[ $# == 1 ]] && [[ ! -f "`pwd`/.brofile" ]]; then
+    bro_usage
+  elif [[ ! -e "$project_reference" ]] && [[ -f "`pwd`/.brofile" ]]; then
+    bro_local_task $@
+  else
+    bro_remote_task $@
   fi
-
-  project=$1
-  project_reference=`bro_expand "$BRO_STATION/projects/$project"`
-
-  # check if the project exists
-  if [ ! -e "$project_reference" ]; then
-    bro_error "the project \"$project\" does not exist.\n Create it with $ bro create $1"
-    return 1
-  fi
-
-  project_path=`bro_expand $(sed '1p' $project_reference)`
-  cd $project_path
-  source "$project_path/.brofile" workon $project
 }
 
 
@@ -220,15 +220,16 @@ bro_list () {
 
 
 bro () {
+  if [ "$#" == "0" ] ; then
+    bro_usage
+    return 1
+  fi
+
   cmd=$1
   project=$2
 
   # local OPTIND
-
   case $cmd in
-    workon)
-      bro_workon $project
-      ;;
     create)
       shift
       bro_create $@
@@ -239,11 +240,8 @@ bro () {
     list)
       bro_list
       ;;
-    boot)
-      bro_boot $project
-      ;;
     *)
-      bro_usage
+      bro_task $@
       ;;
   esac
 }
