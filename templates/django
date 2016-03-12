@@ -16,9 +16,14 @@ case $task in
     git init
     echo '.brofile' >> .gitignore
 
-    # setup virtual environment
-    virtualenv --python=python3 .env
+    # setup virtual environment with default python version
+    virtualenv .env
     echo '.env' >> .gitignore
+    source .env/bin/activate
+
+    # install django and create app
+    pip install django
+    django-admin startproject $project .
 
     # boot project
     bro boot

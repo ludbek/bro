@@ -1,51 +1,48 @@
 #!/bin/sh
+# please do not edit codes below
+project=$1
+task=$2
+shift
+full_cmd=$@
+# please do not edit codes above
 
-# $1 is subcommand
-# $2 is project name
-
-case $1 in
+case $task in
   setup)
     # Edit this section for setting up a project.
     # Commands here are executed only during project creation.
     # 'bro create <project>' executes commands here.
-    
+
     # git
     git init
     echo '.brofile' >> .gitignore
+
+    # setup virtual environment
+    virtualenv --python=python2 .env
     echo '.env' >> .gitignore
 
-    # for node
-    #   npm init
-    
-    # for python
-    virtualenv --python=python2 .env
-
     # boot project
-    source .brofile boot
+    bro boot
     ;;
   boot)
     # Edit this section to launch necessary tools for a project.
     # Commands here are the first to be executed during project startup.
-    # 'bro boot <project>' executes commands here.
+    # 'bro <project> boot' executes commands here.
 
-    source .brofile workon
+    bro workon
 
     # launch necessary tools
-    # atom &
+    # subl &
     # firefox &
     # nemo &
     ;;
   workon)
     # Edit this section to set appropriate environment for the project."
     # Commands here are to be executed for every new terminals.
-    # 'bro workon <project>' executes commands here.
+    # 'bro <project> workon' executes commands here.
 
-    # for node
-    #   nvm use v0.10.38
-
-    # for python
+    # activate the virtual env
     source .env/bin/activate
     ;;
   *)
-    echo "Unknown command." 
+    bro_usage
  esac

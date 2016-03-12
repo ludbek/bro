@@ -1,66 +1,99 @@
+# About
+A generic project manager and task executer.
+It creates, lists and removes projects.
+It also executes tasks inside a project.
+
+# Updates
+- v2.0.0 allows tasks. The task execution syntax has change. Its now `bro [project] <task> [params]` instead of `bro <task> project`
+
+# Requirements
+Linux or OSX.
+
+# Installation
+Clone this repo and execute the `install` script.
+
+```shell
+$ git clone https://github.com/ludbek/bro.git
+$ cd bro
+$ ./install
+$ Project directory? ($HOME/projects):     # directory where Bro will store projects
+$ Bro directory? ($HOME/.bro):             # directory where Bro file will reside
+$ source ~/.bashrc
 ```
-About
-  A generic project management tool.
+
+# Commands
+## Create new project
+`$ bro create [-t template -p path -r repo] project`
+
+The options are optional.
+
+### -t
+Name of template file at `$BRO_STATION/templates/` directory which will be used for setting up the project. Checkout the templates at `templates` directory for deeper insight.
+
+### -p
+Path where the new project will be created. By default it is created at the default directory
+as specificed by environment variable `WORKSTATION`.
+
+The path could be in following formats:
+
+1. `-p /absolute/path/to/project`
+2. `-p ~/path/to/project`
+3. `-p category`
+    Path relative to the default project directory.
+
+### -r
+URL of the remote git repo which will be used as the new project's blueprint.
+
+## Remove existing project
+`$ bro remove project`
+
+~~Use it with caution.~~Unlinks the project. Bro won't remove the project directory. One has to manually remove it.
+
+## List projects
+`$ bro list`
 
 
-Installation
-  Clone this repo at your home directory with the name '.bro' and add it to 
-  system path.
+# Task Execution
+`bro [project] <task> [params]`
 
-  $ git clone git@github.com:ludbek/bro.git
-  $ cd bro
-  $ ./install
-  $ source ~/.bashrc
+Task is simply a switch case in `.brofile`.
 
-
-Commands
-  Create new project
-    $ bro create awesome_project brofile_template
-    
-    Creates a directory named 'awesome_project' at default project directory which
-    is at '~/projects'. It also places a '.brofile' inside the 'awesome_project'.
-    '.brofile' is simply a shell script which is executed by Bro everytime the project
-    starts. 'bro create' executes commands at 'setup' section in a '.brofile'.
-   
-    brofile_template is optional. If present, it is the name of one the templates at
-    '.bro/templates' directory. These templates are used for creating '.brofile'
-    for a project. Clone and modify the default template to meet your need. One can
-    have different templates for different kinds of projects.
-
-  Kickstart an existing project
-    $ bro boot awesome_project
-    
-    Boots a project. It executes commands at 'boot' section in a '.brofile'.
-    Use this command to start working on an existing project and launch
-    necessary tools for working on it.
-
-  Work on project which has been booted
-    $ bro workon awesome_project
-    
-    Once the project has been kickstarted, use this command for every new terminal.
-    It executes commands at 'workon' section in a '.brofile'.
-
-  Remove existing project
-    $ bro remove awesome_project
-    
-    Use it with caution. Deletes the specified project.
-  
-  List projects
-    $ bro list
+- project(optional) : Name of the project. The project name is not required if one is at the project's root directory.
+- task : A task inside the project.
+- params(optional) : Parameters passed to the project.
 
 
-Brofile
-  .brofile is a shell script which is executed during project creation and boot up.
-  It is created from templates at 'template/' directory. One can easily extend
-  'default' .brofile template.
-  
+## Default Tasks
+### boot
+`$ bro project boot`
 
-Configuration
-  Specify project directory
-    Set the directory where Bro saves the projects.
-      $ export WORKSTATION=~/path/to/project/directory/
+Boots a project. It executes task at `boot` section in the `.brofile`.
+Use this command to launch tools necessary for the project. e.g. emulators, text editor, browser, etc.
 
-  Specify Bro directory
-    Set where Bro files will reside.
-      $ export BRO_STATION=/path/to/bro-directory/
-```  
+### workon
+`$ bro project workon`
+
+Execute this task for every new terminal. Useful for setting environment variables. It executes commands at `workon` section in the `.brofile` at a project directory.
+
+# Brofile
+`.brofile` is a shell script which is executed during project creation and task execution.
+It is created from templates at `templates/` directory. One can easily extend
+`default` brofile template.
+
+
+# Configuration
+The values are set during installation.
+## Specify project directory
+Set the directory where Bro saves the projects.
+`$ export WORKSTATION=~/path/to/projects/directory/`
+
+## Specify Bro directory
+Set where Bro files will reside.
+`$ export BRO_STATION=/path/to/bro-directory/`
+
+
+# TODO
+- Autocomplete commands and stuff.
+- ~~Support custom commands(tasks).~~
+- ~~Create project from a git repo.~~
+- ~~Specify project path while creating a new one.~~
