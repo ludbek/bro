@@ -1,21 +1,5 @@
 #!/bin/sh
 
-bro_init () {
-  if [ "$WORKSTATION" = "" ]; then
-    export WORKSTATION=$HOME/projects
-  fi
-
-  if [ "$BRO_STATION" = "" ]; then
-    export BRO_STATION=$HOME/.bro
-  fi
-
-  BRO_TEMPLATES_DIR="$BRO_STATION/templates"
-
-  mkdir -p `bro_expand $WORKSTATION`
-  mkdir -p `bro_expand $BRO_STATION`
-  mkdir -p `bro_expand $BRO_TEMPLATES_DIR` 
-}
-
 bro_expand () {
   echo `sh -c "echo $1"`
 }
@@ -66,7 +50,7 @@ bro_boot_usage () {
 bro_setup () {
   project=$1
   project_path=`bro_expand "$WORKSTATION/$project"`
-  
+
   cd $project_path
   source "$project_path/.brofile" setup $project
 }
@@ -145,7 +129,7 @@ bro_create () {
 
   ## create project directory at workstation
   mkdir -p $project_path
-  
+
   ## copy bro template to project directory
   cp $BRO_STATION/templates/$template $project_path/.brofile
   chmod +x $project_path/.brofile
@@ -172,11 +156,11 @@ bro_remove () {
 
   echo "Yo! are sure you wanna remove $project?"
   echo "This will remove the project directory as well."
-  read -p "Do you still wish to continue? (y/n):" confirm
+  read -p "Do you still wish to continue? (Y/n):" confirm
 
-  if [ $confirm = "" ] || [ $confirm = "y" ] || [ $confirm = "Y" ]; then
+  if [ "$confirm" = "" ] || [ "$confirm" = "y" ] || [ "$confirm" = "Y" ]; then
     rm -rf $project_path
-    
+
     echo "Successfully removed project $project."
     return 0
   else
@@ -190,12 +174,11 @@ bro_list () {
   echo `ls $WORKSTATION`
 }
 
-bro_init
 
 bro () {
   cmd=$1
   project=$2
-  
+
   case $cmd in
     workon)
       bro_workon $project
