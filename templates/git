@@ -12,11 +12,10 @@ case $1 in
     # git
     git init
     echo '.brofile' >> .gitignore
-    echo '.env' >> .gitignore
 
     # for node
     #   npm init
-    
+
     # for python
     #   virtulenv .env
 
@@ -31,7 +30,7 @@ case $1 in
     source .brofile workon
 
     # launch necessary tools
-    # atom &
+    # subl &
     # firefox &
     # nemo &
     ;;
@@ -47,5 +46,5 @@ case $1 in
     #   source .env/bin/activate
     ;;
   *)
-    echo "Unknown command." 
+    echo "Unknown command."
  esac

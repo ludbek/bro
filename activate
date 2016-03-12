@@ -5,25 +5,38 @@ bro_expand () {
 }
 
 bro_error () {
-  printf "Yo! $1.\n"
+  printf "Aye! $1.\n"
 }
 
 bro_usage () {
-  echo "Usage: bro <subcommand>"
+  echo "Project management: bro <subcommand>"
   echo "Available subcommands are:"
   echo "  create     Create a new project."
   echo "  list       List available projects to work on."
-  echo "  boot       Boot a project."
-  echo "  workon     Work on an existing project."
   echo "  remove     Delete an existing project."
   echo "Try 'bro <subcommand>' for details."
+  echo "------------------------------------------------"
+  echo "Task execution: bro [project] <task> [params]"
+  echo "  project    Project name. (Not required inside project directory.)"
+  echo "  task       Task at .brofile."
+  echo "  params     Parameters for the task."
+}
+
+
+bro_task_usage () {
+  echo "Usage: bro [project] <task> [params]"
+  echo "  project    Project name. (Not required inside project directory.)"
+  echo "  task       Task at .brofile."
+  echo "  params     Parameters for the task."
 }
 
 
 bro_create_usage () {
-  echo "Usage: bro create <project> [template]"
+  echo "Usage: bro create [-t template -p path -r repo] project"
   echo "  project     Name of the project to be created."
-  echo "  template    [Optional] Name of the template to be used as .brofile file."
+  echo "  template    Name of one of the templates at templates/ directory."
+  echo "  path        Absolute/relative path where the project directory is to be created."
+  echo "  repo        URL of existing git repository."
 }
 
 
@@ -33,106 +46,135 @@ bro_remove_usage () {
 }
 
 
-bro_workon_usage () {
-  echo "Usage: bro workon <project>"
-  echo "  project     Name of the project to work on."
-}
-
-
-bro_boot_usage () {
-  echo "Usage: bro boot <project>"
-  echo "  project     Name of the project to boot."
-}
-
-
 # setup a project
 # like installing dependencies, git, preparing project structure etc
 bro_setup () {
   project=$1
-  project_path=`bro_expand "$WORKSTATION/$project"`
+  project_reference=`bro_expand "$BRO_STATION/projects/$project"`
 
-  cd $project_path
-  source "$project_path/.brofile" setup $project
-}
-
-
-# prepare environment, launch tools like text editor, browser, etc.
-bro_boot () {
-  if [ "$1" == "" ] ; then
-    bro_boot_usage
+  # check if the project exists
+  if [ ! -e "$project_reference" ]; then
+    bro_error "the project \"$project\" does not exist.\n Create it with $ bro create $1"
     return 1
   fi
 
+  project_path=`bro_expand $(sed '1p' $project_reference)`
+  cd $project_path
+  source "$project_path/.brofile" $project setup
+}
+
+
+bro_remote_task () {
+  # check for proper number of arguments
+  # must have at least two arguments
+  if [ "$#" == "1" ] ; then
+    bro_task_usage
+    return 1
+  fi
+
+  # get project name
   project=$1
-  project_path=`bro_expand "$WORKSTATION/$project"`
+  project_reference=`bro_expand "$BRO_STATION/projects/$project"`
 
   # check if the project exists
-  if [ ! -e "$project_path/.brofile" ]; then
+  if [ ! -e "$project_reference" ]; then
     bro_error "the project \"$1\" does not exist.\n Create it with $ bro create $1"
     return 1
   fi
 
+  project_path=`bro_expand $(sed '1p' $project_reference)`
   cd $project_path
-  source "$project_path/.brofile" boot $project
+
+  source "$project_path/.brofile" $@
 }
 
+bro_local_task () {
+  project=$(basename "`pwd`")
+  source ./.brofile $project $@
+}
 
-# jump to project directory and initialize necessary environment
-bro_workon () {
-  if [ "$1" == "" ] ; then
-    bro_workon_usage
-    return 1
+# execute command at .brofile
+bro_task () {
+  # distinguish remote and local task
+  possible_project=$1
+  project_reference=`bro_expand "$BRO_STATION/projects/$possible_project"`
+
+  if [[ $# == 1 ]] && [[ ! -f "`pwd`/.brofile" ]]; then
+    bro_usage
+  elif [[ ! -e "$project_reference" ]] && [[ -f "`pwd`/.brofile" ]]; then
+    bro_local_task $@
+  else
+    bro_remote_task $@
   fi
-
-  project=$1
-  project_path=`bro_expand "$WORKSTATION/$project"`
-
-  # check if the project exists
-  if [ ! -e "$project_path/.brofile" ]; then
-    bro_error "the project \"$1\" does not exist.\n Create it with $ bro create $1"
-    return 1
-  fi
-
-  cd $project_path
-  source "$project_path/.brofile" workon $project
 }
 
 
 # creates a project
 bro_create () {
-  if [ "$1" == "" ] ; then
+  local OPTIND template path repo opt project_path project_reference
+
+  while getopts :t:p:r: opt; do
+    case  $opt in
+      t) template=$OPTARG;;
+      p) path=$OPTARG;;
+      r) repo=$OPTARG;;
+      *) echo "Invalid option: -" $OPTARG;;
+    esac
+  done
+
+  ## get project name
+  shift $(($OPTIND-1))
+  project=$@
+
+  if [ "$project" = "" ] ; then
+    bro_error "you missed the project name"
     bro_create_usage
     return 1
   fi
 
-  project=$1
-
-  project_path=`bro_expand "$WORKSTATION/$project"`
+  ## set project path
+  if [ "$path" = "" ] ; then
+    project_path=`bro_expand "$WORKSTATION/$project"`
+  else
+    if [ "$(echo $path | sed -n "/[~\/]/p")" = "" ] ; then
+      mkdir -p `bro_expand "$WORKSTATION/$path"`
+      project_path=`bro_expand "$WORKSTATION/$path/$project"`
+    else
+      project_path=`bro_expand "$path/$project"`
+    fi
+  fi
+  ## set project reference path
   project_reference=`bro_expand "$BRO_STATION/projects/$project"`
 
-  # check if the project already exists
+  ### check if the project already exists
   if [ -e $project_reference ] ; then
-    bro_error "the project \"$1\" already exists"
+    bro_error "the project \"$project\" already exists"
     return 1
   fi
 
-  # set bro template
-  if [ "$2" = "" ] ; then
+  ## set template
+  if [ "$template" = "" ] ; then
     template='default'
-  else
-    if [ ! -e $BRO_STATION/templates/$2 ] ; then
-      bro_error "the bro template \"$2\" does not exist. Please create one at $BRO_STATION/templates/"
-      return
-    fi
-    template=$2
   fi
 
-  ## create project directory at workstation
-  mkdir -p $project_path
+  if [ ! -e $BRO_STATION/templates/$template ] ; then
+    bro_error "the bro template \"$template\" does not exist. Please create one at $BRO_STATION/templates/"
+    return
+  fi
+
+  ## create project directory at specified path
+  if [ "$repo" = "" ] ; then
+    mkdir -p $project_path
+  else
+    git clone $repo $project_path
+  fi
 
   ## copy bro template to project directory
   cp $BRO_STATION/templates/$template $project_path/.brofile
   chmod +x $project_path/.brofile
+  ## create project reference file
+  touch $project_reference
+  echo "$project_path" > $project_reference
 
   ## setup project
   bro_setup $project
@@ -146,43 +188,48 @@ bro_remove () {
   fi
 
   project=$1
-  project_path=`bro_expand "$WORKSTATION/$project"`
+  project_reference=`bro_expand "$BRO_STATION/projects/$project"`
 
   # check if the project already exists
-  if [ ! -e "$project_path/.brofile" ]; then
-    bro_error "the project $1 does not exist"
+  if [ ! -e "$project_reference" ]; then
+    bro_error "the project \"$project\" does not exist"
     return 1
   fi
 
-  echo "Yo! are sure you wanna remove $project?"
-  echo "This will remove the project directory as well."
-  read -p "Do you still wish to continue? (Y/n):" confirm
+  rm -f $project_reference
 
-  if [ "$confirm" = "" ] || [ "$confirm" = "y" ] || [ "$confirm" = "Y" ]; then
-    rm -rf $project_path
+  # echo "Yo! are sure you wanna remove $project?"
+  # echo "This will remove the project directory as well."
+  # read -p "Do you still wish to continue? (Y/n):" confirm
 
-    echo "Successfully removed project $project."
-    return 0
-  else
-    echo "Aborting operation for good !!!"
-  fi
+  # if [ "$confirm" = "" ] || [ "$confirm" = "y" ] || [ "$confirm" = "Y" ]; then
+  #   rm -rf $project_path
+
+  #   echo "Successfully removed project $project."
+  #   return 0
+  # else
+  #   echo "Aborting operation for good !!!"
+  # fi
 }
 
 
 # list available projects
 bro_list () {
-  echo `ls $WORKSTATION`
+  echo `ls $BRO_STATION/projects/`
 }
 
 
 bro () {
+  if [ "$#" == "0" ] ; then
+    bro_usage
+    return 1
+  fi
+
   cmd=$1
   project=$2
 
+  # local OPTIND
   case $cmd in
-    workon)
-      bro_workon $project
-      ;;
     create)
       shift
       bro_create $@
@@ -193,10 +240,8 @@ bro () {
     list)
       bro_list
       ;;
-    boot)
-      bro_boot $project
-      ;;
     *)
-      bro_usage
+      bro_task $@
+      ;;
   esac
 }
