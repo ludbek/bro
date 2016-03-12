@@ -34,5 +34,5 @@ fi
 
 
 # copy new version of bro to $BRO_STATION
-mkdir `bro_expand $BRO_STATION`
+mkdir -p `bro_expand $BRO_STATION`
 cp -r ./* `bro_expand $BRO_STATION`
