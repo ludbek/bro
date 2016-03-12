@@ -33,11 +33,6 @@ if [ "$BRO_STATION" = "" ]; then
 fi
 
 
-# earlier version of bro exists remove it
-if [ -e $BRO_STATION ] ; then
-    rm -r `bro_expand $BRO_STATION`
-fi
-
 # copy new version of bro to $BRO_STATION
 mkdir `bro_expand $BRO_STATION`
 cp -r ./* `bro_expand $BRO_STATION`
