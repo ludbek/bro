@@ -4,6 +4,7 @@ It creates, lists and removes projects.
 It also executes tasks inside a project.
 
 # Updates
+~ v2.1.0 supports autocomplete
 - v2.0.0 allows tasks. The task execution syntax has been changed. Its now `bro [project] <task> [params]` instead of `bro <task> project`
 
 # Requirements
@@ -93,7 +94,7 @@ Set where Bro files will reside.
 
 
 # TODO
-- Autocomplete commands and stuff.
+- ~~Autocomplete commands and stuff.~~
 - ~~Support custom commands(tasks).~~
 - ~~Create project from a git repo.~~
 - ~~Specify project path while creating a new one.~~
