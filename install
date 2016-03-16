@@ -28,8 +28,10 @@ if [ "$BRO_STATION" = "" ]; then
     mkdir -p `bro_expand $BRO_STATION`
 
     ACTIVATE=$BRO_STATION/activate
+    AUTOCOMPLETE=$BRO_STATION/autocomplete
     echo "export BRO_STATION=$BRO_STATION" >> ~/.bashrc
     echo "source $ACTIVATE" >> ~/.bashrc
+    echo "source $AUTOCOMPLETE" >> ~/.bashrc
 fi
 
 
