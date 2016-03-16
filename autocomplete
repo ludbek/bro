@@ -1,27 +1,27 @@
 #!/bin/sh
 
 _bro () {
-  echo 1 = $1
-  echo 2 = $2
-  echo 3 = $3
-  echo COMP_LINE = $COMP_LINE
-  echo COMP_POINT = $COMP_POINT
-  echo COMP_KEY = $COMP_KEY
-  echo COMP_TYPE = $COMP_TYPE
-  echo COMP_WORDS = ${COMP_WORDS[]}
-  echo COMP_CWORD = $COMP_CWORD
-  local cur
-  COMREPLY=()
-  cur=$2
+  local cur prev
 
-  case "$cur" in
-    -*)
-      COMPREPLY=( $( compgen -W '-t -p -r' -- $cur ) )
-      ;;
-    *)
-      COMPREPLY=( $(compgen -W 'create delete' -- $cur) )
-    ;;
-  esac
+  cur=${COMP_WORDS[COMP_CWORD]}
+  prev=${COMP_WORDS[COMP_CWORD-1]}
+
+  projects=$(ls $BRO_STATION/projects)
+
+  if (( $COMP_CWORD <= 1 )); then
+    COMPREPLY=( $(compgen -W 'create delete list $projects' -- $cur) )
+    return 0
+  fi
+
+  if [[ "$prev" == "create" ]]; then
+    COMPREPLY=( $(compgen -W '-r -p -t' -- $cur) )
+    return 0
+  fi
+
+  if [[ "$prev" == "delete" ]]; then
+    COMPREPLY=( $(compgen -W '$projects' -- $cur) )
+    return 0
+  fi
 }
 
 complete -F _bro bro
