@@ -22,6 +22,20 @@ _bro () {
     COMPREPLY=( $(compgen -W '$projects' -- $cur) )
     return 0
   fi
+
+  if [[ "$prev" == "list" ]]; then
+    return 0
+  fi
+
+  if (( $COMP_CWORD == 2 )); then
+    project_reference=`bro_expand "$BRO_STATION/projects/$prev"`
+    if [ -e "$project_reference" ]; then
+      project_path=`bro_expand $(sed '1p' $project_reference)`
+      brofile_path=$project_path/.brofile
+      COMPREPLY=( $(compgen -W "$(sed -n 's_\s*\(\w\))_\1_p' ~/projects/minion/.brofile)" -- $cur) )
+    fi
+  fi
+
 }
 
 complete -F _bro bro
