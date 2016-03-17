@@ -9,7 +9,7 @@ _bro () {
   projects=$(ls $BRO_STATION/projects)
 
   if (( $COMP_CWORD <= 1 )); then
-    COMPREPLY=( $(compgen -W 'create delete list $projects' -- $cur) )
+    COMPREPLY=( $(compgen -W 'create remove list $projects' -- $cur) )
     return 0
   fi
 
@@ -18,7 +18,7 @@ _bro () {
     return 0
   fi
 
-  if [[ "$prev" == "delete" ]]; then
+  if [[ "$prev" == "remove" ]]; then
     COMPREPLY=( $(compgen -W '$projects' -- $cur) )
     return 0
   fi
@@ -32,7 +32,7 @@ _bro () {
     if [ -e "$project_reference" ]; then
       project_path=`bro_expand $(sed '1p' $project_reference)`
       brofile_path=$project_path/.brofile
-      COMPREPLY=( $(compgen -W "$(sed -n 's_\s*\(\w\))_\1_p' ~/projects/minion/.brofile)" -- $cur) )
+      COMPREPLY=( $(compgen -W "$(sed -n 's_\s*\(\w\))_\1_p' $brofile_path)" -- $cur) )
     fi
   fi
 
