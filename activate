@@ -1,4 +1,5 @@
 #!/bin/sh
+# 2.1.2
 
 bro_expand () {
   echo `sh -c "echo $1"`
@@ -245,3 +246,44 @@ bro () {
       ;;
   esac
 }
+
+# autocomplete
+_bro () {
+  local cur prev
+
+  cur=${COMP_WORDS[COMP_CWORD]}
+  prev=${COMP_WORDS[COMP_CWORD-1]}
+
+  projects=$(ls $BRO_STATION/projects)
+
+  if (( $COMP_CWORD <= 1 )); then
+    COMPREPLY=( $(compgen -W 'create remove list $projects' -- $cur) )
+    return 0
+  fi
+
+  if [[ "$prev" == "create" ]]; then
+    COMPREPLY=( $(compgen -W '-r -p -t' -- $cur) )
+    return 0
+  fi
+
+  if [[ "$prev" == "remove" ]]; then
+    COMPREPLY=( $(compgen -W '$projects' -- $cur) )
+    return 0
+  fi
+
+  if [[ "$prev" == "list" ]]; then
+    return 0
+  fi
+
+  if (( $COMP_CWORD == 2 )); then
+    project_reference=`bro_expand "$BRO_STATION/projects/$prev"`
+    if [ -e "$project_reference" ]; then
+      project_path=`bro_expand $(sed '1p' $project_reference)`
+      brofile_path=$project_path/.brofile
+      COMPREPLY=( $(compgen -W "$(sed -n 's_\s*\(\w\))_\1_p' $brofile_path)" -- $cur) )
+    fi
+  fi
+
+}
+
+complete -F _bro bro
