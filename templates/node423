@@ -29,17 +29,17 @@ case $task in
     # Commands here are the first to be executed during project startup.
     # 'bro <project> boot' executes commands here.
 
-    bro workon
+    bro default
 
     # launch necessary tools
     # subl &
     # firefox &
     # nemo &
     ;;
-  workon)
+  default)
     # Edit this section to set appropriate environment for the project."
     # Commands here are to be executed for every new terminals.
-    # 'bro <project> workon' executes commands here.
+    # 'bro <project> default' executes commands here.
 
     # setup node version
     nvm use 4.2.3

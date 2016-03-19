@@ -27,17 +27,17 @@ case $1 in
     # Commands here are the first to be executed during project startup.
     # 'bro boot <project>' executes commands here.
 
-    source .brofile workon
+    source .brofile default
 
     # launch necessary tools
     # subl &
     # firefox &
     # nemo &
     ;;
-  workon)
+  default)
     # Edit this section to set appropriate environment for the project."
     # Commands here are to be executed for every new terminals.
-    # 'bro workon <project>' executes commands here.
+    # 'bro default <project>' executes commands here.
 
     # for node
     #   nvm use v0.10.38
