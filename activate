@@ -100,7 +100,9 @@ bro_task () {
   possible_project=$1
   project_reference=`bro_expand "$BRO_STATION/projects/$possible_project"`
 
-  if [[ $# == 1 ]] && [[ ! -f "`pwd`/.brofile" ]]; then
+  if [[ $# == 1 ]] && [[ -f "$project_reference" ]]; then
+    bro_remote_task $possible_project default
+  elif [[ $# == 1 ]] && [[ ! -f "`pwd`/.brofile" ]]; then
     bro_usage
   elif [[ ! -e "$project_reference" ]] && [[ -f "`pwd`/.brofile" ]]; then
     bro_local_task $@
