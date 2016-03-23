@@ -259,7 +259,12 @@ _bro () {
   projects=$(ls $BRO_STATION/projects)
 
   if (( $COMP_CWORD <= 1 )); then
-    COMPREPLY=( $(compgen -W 'create remove list $projects' -- $cur) )
+    if [ -e "./.brofile" ]; then
+      local_commands="$(sed -n 's_\s*\(\w\))_\1_p' './.brofile')"
+      COMPREPLY=( $(compgen -W '$local_commands create remove list $projects' -- $cur) )
+    else
+      COMPREPLY=( $(compgen -W 'create remove list $projects' -- $cur) )
+    fi
     return 0
   fi
 
