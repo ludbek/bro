@@ -1,7 +1,10 @@
 #!/bin/sh
-
-# $1 is subcommand
-# $2 is project name
+# please do not edit codes below
+project=$1
+task=$2
+shift
+full_cmd=$@
+# please do not edit codes above
 
 case $1 in
   setup)
