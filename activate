@@ -96,6 +96,44 @@ bro_local_task () {
 
 # execute command at .brofile
 bro_task () {
+  function session {
+    tmux new -d -s $1
+  }
+
+  function window {
+    tmux new-window -n $1
+  }
+
+  function run {
+    tmux send "$@" ENTER
+  }
+
+  function vsplit {
+    tmux split-window -h -b
+  }
+
+  function hsplit {
+    tmux split-window -b
+  }
+
+
+  function pane {
+    case $1 in
+      up)
+        tmux select-pane -U
+        ;;
+      right)
+        tmux select-pane -R
+        ;;
+      down)
+        tmux select-pane -D
+        ;;
+      left)
+        tmux select-pane -L
+        ;;
+    esac
+  }
+
   # distinguish remote and local task
   possible_project=$1
   project_reference=`bro_expand "$BRO_STATION/projects/$possible_project"`
@@ -109,6 +147,13 @@ bro_task () {
   else
     bro_remote_task $@
   fi
+
+  unset -f session
+  unset -f window
+  unset -f run
+  unset -f vsplit
+  unset -f hsplit
+  unset -f pane
 }
 
 
