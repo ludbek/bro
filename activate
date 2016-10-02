@@ -96,7 +96,7 @@ bro_local_task () {
 
 # execute command at .brofile
 bro_task () {
-  function session {
+  function structure {
     tmux new -d -s $1
   }
 
@@ -132,6 +132,20 @@ bro_task () {
         tmux select-pane -L
         ;;
     esac
+  }
+
+  function focus {
+    if [[ $# == 2 ]]; then
+      tmux select-window -t $1
+      tmux select-pane -t $2
+    elif [[$# == 1 ]]; then
+      tmux select-window -t $1
+    fi
+  }
+
+  function connect {
+    tmux kill-window -t 0
+    tmux a -t $1
   }
 
   # distinguish remote and local task
