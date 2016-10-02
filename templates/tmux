@@ -23,15 +23,26 @@ case $task in
     # $ virtulenv .env
     ;;
   default)
-    # Edit this section to set appropriate environment for the project."
-    # OR use this section to start tmux session
-    # 'bro <project> [default]' executes commands here.
+    # start to structure tmux session for this project
+    structure $project
+      window shell
+        run "echo the shell window"
+      window editor
+        run "vim"
+      window stuff
+        vsplit
+	  run "echo pane 1"
+	pane right
+	  hsplit
+	    run "echo pane 2"
+	  pane down
+	    run "echo pane 3"
 
-    # for node
-    # $ nvm use v0.10.38
+    # focus on the first pane in stuff window
+    focus stuff 2
 
-    # for python
-    # $ source .env/bin/activate
+    # connect to the tmux session for this project
+    connect $project
     ;;
   *)
     bro_task_usage

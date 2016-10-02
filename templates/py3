@@ -8,10 +8,6 @@ full_cmd=$@
 
 case $task in
   setup)
-    # Edit this section for setting up a project.
-    # Commands here are executed only during project creation.
-    # 'bro create <project>' executes commands here.
-
     # git
     git init
     echo '.brofile' >> .gitignore
@@ -20,28 +16,13 @@ case $task in
     virtualenv --python=python3 .env
     echo '.env' >> .gitignore
 
-    # boot project
-    bro boot
-    ;;
-  boot)
-    # Edit this section to launch necessary tools for a project.
-    # Commands here are the first to be executed during project startup.
-    # 'bro <project> boot' executes commands here.
-
-    bro default
-
-    # launch necessary tools
-    # subl &
-    # firefox &
-    # nemo &
     ;;
   default)
-    # Edit this section to set appropriate environment for the project."
-    # Commands here are to be executed for every new terminals.
-    # 'bro <project> default' executes commands here.
+    # 'bro <project> [default]' executes commands here.
 
     # activate the virtual env
     source .env/bin/activate
+
     ;;
   *)
     bro_usage
