@@ -4,6 +4,7 @@ It creates, lists and removes projects.
 It also executes tasks inside a project.
 
 # Updates
+- v3 supports tmux
 - v2.2.0 supports default task
 - v2.1.0 supports autocomplete
 - v2.0.0 allows tasks. The task execution syntax has been changed. Its now `bro [project] <task> [params]` instead of `bro <task> project`
@@ -55,7 +56,7 @@ URL of the remote git repo which will be used as the new project's blueprint.
 `$ bro list`
 
 
-# Task Execution
+# Task
 `bro [project] <task> [params]`
 
 Task is simply a switch case in `.brofile`.
@@ -64,20 +65,22 @@ Task is simply a switch case in `.brofile`.
 - task : A task inside the project.
 - params(optional) : Parameters passed to the project.
 
+## Project setup task
+...
 
-## Default Tasks
-### boot
-`$ bro project boot`
-
-Boots a project. It executes task at `boot` section in the `.brofile`.
-Use this command to launch tools necessary for the project. e.g. emulators, text editor, browser, etc.
-
-### default
+## Default task
 `$ bro project default`
 Or
 `$ bro project`
 
 Execute this task for every new terminal. Useful for setting environment variables. It executes commands at `default` section in the `.brofile` at a project directory.
+
+## Custom tasks
+...
+
+
+# Tmux
+...
 
 # Brofile
 `.brofile` is a shell script which is executed during project creation and task execution.
