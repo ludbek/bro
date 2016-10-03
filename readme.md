@@ -62,7 +62,7 @@ URL of the remote git repo which will be used as the new project's blueprint.
 Task is simply a switch case in `.brofile`.
 
 - project(optional) : Name of the project. The project name is not required if one is at the project's root directory.
-- task : A task inside the project.
+- task : A switch case in `.brofile`
 - params(optional) : Parameters passed to the project.
 
 ## Project setup task
