@@ -44,6 +44,9 @@ case $task in
     # connect to the tmux session for this project
     connect $project
     ;;
+  exit)
+    tmux kill-session -t $project
+    ;;
   *)
     bro_task_usage
  esac
