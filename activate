@@ -138,7 +138,7 @@ bro_task () {
     if [[ $# == 2 ]]; then
       tmux select-window -t $1
       tmux select-pane -t $2
-    elif [[$# == 1 ]]; then
+    elif [[ $# == 1 ]]; then
       tmux select-window -t $1
     fi
   }
@@ -162,12 +162,14 @@ bro_task () {
     bro_remote_task $@
   fi
 
-  unset -f session
+  unset -f structure
   unset -f window
   unset -f run
   unset -f vsplit
   unset -f hsplit
   unset -f pane
+  unset -f focus
+  unset -f connect
 }
 
 
