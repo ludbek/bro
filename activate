@@ -221,12 +221,11 @@ bro_create () {
       template_path=`bro_expand "~/.bro/templates/default"`
       ;;
     # templates/name or name
-    [0-9a-zA-Z]*)
-      template_path=`bro_expand "$WORKSTATION/$template"`
+    git@*|http:*|https:*|/*|~*)
+      template_path=$template
       ;;
     *)
-	    echo 3
-      template_path=$template
+      template_path=`bro_expand "$WORKSTATION/$template"`
       ;;
   esac
 
@@ -234,7 +233,7 @@ bro_create () {
   case $template_path in
     # http or git
     git@*|http:*|https:*)
-      git clone $repo $project_path
+      git clone $template_path $project_path
 
       if [ ! -e $project_path ] ; then
         bro_error "it seems template at \"$template_path\" does not exist.\nPlease check the url or the internet connection."
