@@ -217,25 +217,45 @@ bro_create () {
   fi
 
   ## set template
-  if [ "$template" = "" ] ; then
-    template='default'
-  fi
-
-  if [ ! -e $BRO_STATION/templates/$template ] ; then
-    bro_error "the bro template \"$template\" does not exist. Please create one at $BRO_STATION/templates/"
-    return
-  fi
+  case $template in
+    "")
+      template_path=`bro_expand "~/.bro/templates/default"`
+      ;;
+    # templates/name or name
+    [0-9a-zA-Z]*)
+      template_path=`bro expand "$WORKSTATION/$template"`
+      ;;
+    *)
+      template_path=$template
+      ;;
+  esac
 
   ## create project directory at specified path
-  if [ "$repo" = "" ] ; then
-    mkdir -p $project_path
-  else
-    git clone $repo $project_path
-  fi
+  case $template_path in
+    # http or git
+    http*://|git@*)
+      git clone $repo $project_path
 
-  ## copy bro template to project directory
-  cp $BRO_STATION/templates/$template $project_path/.brofile
+      if [ ! -e $project_path ] ; then
+        bro_error "it seems template at \"$template_path\" does not exist.\nPlease check the url or the internet connection."
+        return
+      fi
+      ;;
+    # local path
+    *)
+      if [ ! -e $template_path ] ; then
+        bro_error "the bro template \"$template\" does not exist. Please create one at $WORKSTATION"
+        return
+      fi
+
+      mkdir -p $project_path
+      ;;
+  esac
+
+  ## copy files from template to project directory
+  cp -r $template_path/* $project_path/
   chmod +x $project_path/.brofile
+
   ## create project reference file
   touch $project_reference
   echo "$project_path" > $project_reference
