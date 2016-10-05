@@ -175,13 +175,12 @@ bro_task () {
 
 # creates a project
 bro_create () {
-  local OPTIND template path repo opt project_path project_reference
+  local OPTIND template path opt project_path project_reference template_path
 
-  while getopts :t:p:r: opt; do
+  while getopts :t:p: opt; do
     case  $opt in
       t) template=$OPTARG;;
       p) path=$OPTARG;;
-      r) repo=$OPTARG;;
       *) echo "Invalid option: -" $OPTARG;;
     esac
   done
@@ -208,7 +207,7 @@ bro_create () {
     fi
   fi
   ## set project reference path
-  project_reference=`bro_expand "$BRO_STATION/projects/$project"`
+  project_reference=`bro_expand "~/.bro/projects/$project"`
 
   ### check if the project already exists
   if [ -e $project_reference ] ; then
@@ -223,9 +222,10 @@ bro_create () {
       ;;
     # templates/name or name
     [0-9a-zA-Z]*)
-      template_path=`bro expand "$WORKSTATION/$template"`
+      template_path=`bro_expand "$WORKSTATION/$template"`
       ;;
     *)
+	    echo 3
       template_path=$template
       ;;
   esac
@@ -233,7 +233,7 @@ bro_create () {
   ## create project directory at specified path
   case $template_path in
     # http or git
-    http*://|git@*)
+    git@*|http:*|https:*)
       git clone $repo $project_path
 
       if [ ! -e $project_path ] ; then
@@ -249,12 +249,18 @@ bro_create () {
       fi
 
       mkdir -p $project_path
+
+      ## copy files from template to project directory
+      cp -a $template_path/. $project_path/
+
+      if [ ! -f $project_path/.brotasks ] ; then
+      	chmod +x $project_path/.brotasks
+      else
+	chmod +x $project_path/.brotasks
+      fi
       ;;
   esac
 
-  ## copy files from template to project directory
-  cp -r $template_path/* $project_path/
-  chmod +x $project_path/.brofile
 
   ## create project reference file
   touch $project_reference
