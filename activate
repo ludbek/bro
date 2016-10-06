@@ -61,7 +61,8 @@ bro_setup () {
 
   project_path=`bro_expand $(sed '1p' $project_reference)`
   cd $project_path
-  source "$project_path/.brofile" $project setup
+
+  bro_route_task $project setup
 }
 
 
@@ -86,12 +87,23 @@ bro_remote_task () {
   project_path=`bro_expand $(sed '1p' $project_reference)`
   cd $project_path
 
-  source "$project_path/.brofile" $@
+  bro_route_task $@
 }
 
 bro_local_task () {
   project=$(basename "`pwd`")
-  source ./.brofile $project $@
+
+  bro_route_task $project $@
+}
+
+bro_route_task () {
+  if [ -d .brotasks ] ; then
+    echo "woah lots of tasks"
+  else
+    if [ -f .brotasks ] ; then
+      source ./.brotasks $@
+    fi
+  fi
 }
 
 # execute command at .brofile
@@ -372,7 +384,7 @@ _bro () {
     project_reference=`bro_expand "$BRO_STATION/projects/$prev"`
     if [ -e "$project_reference" ]; then
       project_path=`bro_expand $(sed '1p' $project_reference)`
-      brofile_path=$project_path/.brofile
+      brofile_path=$project_path/.brotasks
       COMPREPLY=( $(compgen -W "$(sed -n 's_\s*\(\w\))_\1_p' $brofile_path)" -- $cur) )
     fi
   fi
