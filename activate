@@ -1,5 +1,5 @@
 #!/bin/sh
-# 2.2.1
+# 3.0.0
 
 bro_expand () {
   echo `sh -c "echo $1"`
@@ -98,7 +98,11 @@ bro_local_task () {
 
 bro_route_task () {
   if [ -d .brotasks ] ; then
-    echo "woah lots of tasks"
+    for filename in ./.brotasks/* ; do
+      if [ -f $filename ] ; then
+        source $filename $@
+      fi
+    done
   else
     if [ -f .brotasks ] ; then
       source ./.brotasks $@
@@ -162,13 +166,13 @@ bro_task () {
 
   # distinguish remote and local task
   possible_project=$1
-  project_reference=`bro_expand "$BRO_STATION/projects/$possible_project"`
+  project_reference=`bro_expand "~/.bro/projects/$possible_project"`
 
   if [[ $# == 1 ]] && [[ -f "$project_reference" ]]; then
     bro_remote_task $possible_project default
-  elif [[ $# == 1 ]] && [[ ! -f "`pwd`/.brofile" ]]; then
-    bro_usage
-  elif [[ ! -e "$project_reference" ]] && [[ -f "`pwd`/.brofile" ]]; then
+  elif [[ $# == 1 ]] && [[ ! -e ".brotasks" ]]; then
+    bro_error "could not find .brotasks here"
+  elif [[ ! -e "$project_reference" ]] && [[ -e ".brotasks" ]]; then
     bro_local_task $@
   else
     bro_remote_task $@
