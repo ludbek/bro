@@ -166,12 +166,13 @@ bro_task () {
 
   # distinguish remote and local task
   possible_project=$1
-  project_reference=`bro_expand "~/$BRO_STATION/projects/$possible_project"`
+  project_reference=`bro_expand "$BRO_STATION/projects/$possible_project"`
 
   if [[ $# == 1 ]] && [[ -f "$project_reference" ]]; then
+    echo "hgere"
     bro_remote_task $possible_project default
   elif [[ $# == 1 ]] && [[ ! -e ".brotasks" ]]; then
-    bro_error "could not find .brotasks here"
+    bro_usage
   elif [[ ! -e "$project_reference" ]] && [[ -e ".brotasks" ]]; then
     bro_local_task $@
   else
@@ -361,29 +362,40 @@ _bro () {
   projects=$(ls $BRO_STATION/projects)
 
   if (( $COMP_CWORD <= 1 )); then
-    if [ -e "./.brofile" ]; then
-      local_commands="$(sed -n 's_\s*\(\w\))_\1_p' './.brofile')"
-      COMPREPLY=( $(compgen -W '$local_commands create remove list $projects' -- $cur) )
+    # auto complete local tasks
+    if [ -e "./.brotasks" ]; then
+      if [ -f "./.brotasks" ]; then
+        local_commands="$(sed -n 's_\s*\(\w\))_\1_p' './.brotasks')"
+        COMPREPLY=( $(compgen -W '$local_commands create remove list $projects' -- $cur) )
+      else
+        # local_commands="$(sed -n 's_\s*\(\w\))_\1_p' './.brotasks')"
+        # COMPREPLY=( $(compgen -W '$local_commands create remove list $projects' -- $cur) )
+	echo "yolo"
+      fi
     else
       COMPREPLY=( $(compgen -W 'create remove list $projects' -- $cur) )
     fi
     return 0
   fi
 
+  # autocomplete options for create command
   if [[ "$prev" == "create" ]]; then
-    COMPREPLY=( $(compgen -W '-r -p -t' -- $cur) )
+    COMPREPLY=( $(compgen -W '-p -t' -- $cur) )
     return 0
   fi
 
+  # autocomplete project names for remove command
   if [[ "$prev" == "remove" ]]; then
     COMPREPLY=( $(compgen -W '$projects' -- $cur) )
     return 0
   fi
 
+  # no auto completion for list command
   if [[ "$prev" == "list" ]]; then
     return 0
   fi
 
+  # remote command completion
   if (( $COMP_CWORD == 2 )); then
     project_reference=`bro_expand "$BRO_STATION/projects/$prev"`
     if [ -e "$project_reference" ]; then
@@ -392,7 +404,6 @@ _bro () {
       COMPREPLY=( $(compgen -W "$(sed -n 's_\s*\(\w\))_\1_p' $brofile_path)" -- $cur) )
     fi
   fi
-
 }
 
 complete -F _bro bro
