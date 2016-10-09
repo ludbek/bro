@@ -352,6 +352,18 @@ bro () {
   esac
 }
 
+bro_autocomplete_tasks () {
+  projects=$(ls $BRO_STATION/projects)
+
+  if [ -f $1 ]; then
+    local_commands="$(sed -n 's_\s*\(\w\))_\1_p' $1)"
+    COMPREPLY=( $(compgen -W '$local_commands create remove list $projects' -- $cur) )
+  else
+    local_commands="$(find $1 -type f -print0 | xargs -0 sed -n 's_\s*\(\w\))_\1_p')"
+    COMPREPLY=( $(compgen -W '$local_commands create remove list $projects' -- $cur) )
+  fi
+}
+
 # autocomplete
 _bro () {
   local cur prev
@@ -364,14 +376,8 @@ _bro () {
   if (( $COMP_CWORD <= 1 )); then
     # auto complete local tasks
     if [ -e "./.brotasks" ]; then
-      if [ -f "./.brotasks" ]; then
-        local_commands="$(sed -n 's_\s*\(\w\))_\1_p' './.brotasks')"
-        COMPREPLY=( $(compgen -W '$local_commands create remove list $projects' -- $cur) )
-      else
-        # local_commands="$(sed -n 's_\s*\(\w\))_\1_p' './.brotasks')"
-        # COMPREPLY=( $(compgen -W '$local_commands create remove list $projects' -- $cur) )
-	echo "yolo"
-      fi
+      tasks_path="./.brotasks"
+      bro_autocomplete_tasks $tasks_path
     else
       COMPREPLY=( $(compgen -W 'create remove list $projects' -- $cur) )
     fi
@@ -400,8 +406,8 @@ _bro () {
     project_reference=`bro_expand "$BRO_STATION/projects/$prev"`
     if [ -e "$project_reference" ]; then
       project_path=`bro_expand $(sed '1p' $project_reference)`
-      brofile_path=$project_path/.brotasks
-      COMPREPLY=( $(compgen -W "$(sed -n 's_\s*\(\w\))_\1_p' $brofile_path)" -- $cur) )
+      tasks_path=$project_path/.brotasks
+      bro_autocomplete_tasks $tasks_path
     fi
   fi
 }
