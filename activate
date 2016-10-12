@@ -15,6 +15,7 @@ bro_usage () {
   echo "  create     Create a new project."
   echo "  list       List available projects to work on."
   echo "  remove     Delete an existing project."
+  echo "  exit       Exit a tmux session started by bro."
   echo "Try 'bro <subcommand>' for details."
   echo "------------------------------------------------"
   echo "Task execution: bro [project] <task> [params]"
@@ -112,28 +113,29 @@ bro_route_task () {
 
 # execute command at .brofile
 bro_task () {
-  function structure {
+  structure () {
+    export BRO_TMUX_SESSION=$1 
     tmux new -d -s $1
   }
 
-  function window {
+  window () {
     tmux new-window -n $1
   }
 
-  function run {
+  run () {
     tmux send "$@" ENTER
   }
 
-  function vsplit {
+  vsplit () {
     tmux split-window -h -b
   }
 
-  function hsplit {
+  hsplit () {
     tmux split-window -b
   }
 
 
-  function pane {
+  pane () {
     case $1 in
       up)
         tmux select-pane -U
@@ -150,7 +152,7 @@ bro_task () {
     esac
   }
 
-  function focus {
+  focus () {
     if [[ $# == 2 ]]; then
       tmux select-window -t $1
       tmux select-pane -t $2
@@ -159,7 +161,7 @@ bro_task () {
     fi
   }
 
-  function connect {
+  connect () {
     tmux kill-window -t 0
     tmux a -t $1
   }
@@ -169,7 +171,6 @@ bro_task () {
   project_reference=`bro_expand "$BRO_STATION/projects/$possible_project"`
 
   if [[ $# == 1 ]] && [[ -f "$project_reference" ]]; then
-    echo "hgere"
     bro_remote_task $possible_project default
   elif [[ $# == 1 ]] && [[ ! -e ".brotasks" ]]; then
     bro_usage
@@ -324,6 +325,10 @@ bro_list () {
   echo `ls $BRO_STATION/projects/`
 }
 
+# quit tmux session
+bro_exit () {
+  tmux kill-session -t $BRO_TMUX_SESSION
+}
 
 bro () {
   if [ "$#" == "0" ] ; then
@@ -346,6 +351,12 @@ bro () {
     list)
       bro_list
       ;;
+    exit)
+      bro_exit
+      ;;
+    takeover)
+      echo "takes over non bro project"
+      ;;
     *)
       bro_task $@
       ;;
@@ -357,10 +368,10 @@ bro_autocomplete_tasks () {
 
   if [ -f $1 ]; then
     local_commands="$(sed -n 's_\s*\(\w\))_\1_p' $1)"
-    COMPREPLY=( $(compgen -W '$local_commands create remove list $projects' -- $cur) )
+    COMPREPLY=( $(compgen -W '$local_commands create remove list exit $projects' -- $cur) )
   else
     local_commands="$(find $1 -type f -print0 | xargs -0 sed -n 's_\s*\(\w\))_\1_p')"
-    COMPREPLY=( $(compgen -W '$local_commands create remove list $projects' -- $cur) )
+    COMPREPLY=( $(compgen -W '$local_commands create remove list exit $projects' -- $cur) )
   fi
 }
 
@@ -379,7 +390,7 @@ _bro () {
       tasks_path="./.brotasks"
       bro_autocomplete_tasks $tasks_path
     else
-      COMPREPLY=( $(compgen -W 'create remove list $projects' -- $cur) )
+      COMPREPLY=( $(compgen -W 'create remove list exit $projects' -- $cur) )
     fi
     return 0
   fi
