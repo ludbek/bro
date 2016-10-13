@@ -273,7 +273,7 @@ bro_create () {
       if [ ! -f $project_path/.brotasks ] ; then
       	chmod +x $project_path/.brotasks
       else
-	chmod +x $project_path/.brotasks
+        chmod +x $project_path/.brotasks
       fi
       ;;
   esac
@@ -325,10 +325,39 @@ bro_list () {
   echo `ls $BRO_STATION/projects/`
 }
 
+
 # quit tmux session
 bro_exit () {
   tmux kill-session -t $BRO_TMUX_SESSION
 }
+
+
+# takeover existing projects
+bro_takeover () {
+	if [ ! $# == 2 ] ; then
+		echo "Display usage."
+		return
+	fi
+
+	project_reference=$BRO_STATION/projects/$2
+
+	if [ -f $project_reference ] ; then
+		echo "Project already exists."
+		return
+	fi
+
+	if [ ! -d $1 ] ; then
+		echo "$1 does not exist."
+		return
+	fi
+
+	## create project reference file
+	touch $project_reference
+	echo "$1" > $project_reference
+
+	bro_setup $2
+}
+
 
 bro () {
   if [ "$#" == "0" ] ; then
@@ -355,7 +384,8 @@ bro () {
       bro_exit
       ;;
     takeover)
-      echo "takes over non bro project"
+			shift
+			bro_takeover $@
       ;;
     *)
       bro_task $@
@@ -368,10 +398,10 @@ bro_autocomplete_tasks () {
 
   if [ -f $1 ]; then
     local_commands="$(sed -n 's_\s*\(\w\))_\1_p' $1)"
-    COMPREPLY=( $(compgen -W '$local_commands create remove list exit $projects' -- $cur) )
+    COMPREPLY=( $(compgen -W '$local_commands create remove list takeover exit $projects' -- $cur) )
   else
     local_commands="$(find $1 -type f -print0 | xargs -0 sed -n 's_\s*\(\w\))_\1_p')"
-    COMPREPLY=( $(compgen -W '$local_commands create remove list exit $projects' -- $cur) )
+    COMPREPLY=( $(compgen -W '$local_commands create remove list takeover exit $projects' -- $cur) )
   fi
 }
 
@@ -390,7 +420,7 @@ _bro () {
       tasks_path="./.brotasks"
       bro_autocomplete_tasks $tasks_path
     else
-      COMPREPLY=( $(compgen -W 'create remove list exit $projects' -- $cur) )
+      COMPREPLY=( $(compgen -W 'create remove list takeover exit $projects' -- $cur) )
     fi
     return 0
   fi
