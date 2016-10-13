@@ -437,6 +437,11 @@ _bro () {
     return 0
   fi
 
+  if [[ "$prev" == "takeover" ]]; then
+		COMPREPLY=( $(compgen -f -- $cur) )
+    return 0
+  fi
+
   # no auto completion for list command
   if [[ "$prev" == "list" ]]; then
     return 0
