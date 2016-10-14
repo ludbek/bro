@@ -232,7 +232,7 @@ bro_create () {
     fi
   fi
   ## set project reference path
-  project_reference=`bro_expand "~/$BRO_STATION/projects/$project"`
+  project_reference=`bro_expand "$BRO_STATION/projects/$project"`
 
   ### check if the project already exists
   if [ -e $project_reference ] ; then
@@ -243,7 +243,7 @@ bro_create () {
   ## set template
   case $template in
     "")
-      template_path=`bro_expand "~/$BRO_STATION/templates/default"`
+      template_path=`bro_expand "$BRO_STATION/templates/default"`
       ;;
     # templates/name or name
     git@*|http:*|https:*|/*|~*)
