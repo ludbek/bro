@@ -15,12 +15,13 @@ bro_usage () {
   echo "  create     Create a new project."
   echo "  list       List available projects to work on."
   echo "  remove     Delete an existing project."
+  echo "  takeover   Let bro handle existing project."
   echo "  exit       Exit a tmux session started by bro."
   echo "Try 'bro <subcommand>' for details."
   echo "------------------------------------------------"
   echo "Task execution: bro [project] <task> [params]"
   echo "  project    Project name. (Not required inside project directory.)"
-  echo "  task       Task at .brofile."
+  echo "  task       Task at .brotasks."
   echo "  params     Parameters for the task."
 }
 
@@ -28,23 +29,29 @@ bro_usage () {
 bro_task_usage () {
   echo "Usage: bro [project] <task> [params]"
   echo "  project    Project name. (Not required inside project directory.)"
-  echo "  task       Task at .brofile."
+  echo "  task       Task at .brotasks."
   echo "  params     Parameters for the task."
 }
 
 
 bro_create_usage () {
-  echo "Usage: bro create [-t template -p path -r repo] project"
+  echo "Usage: bro create [-t template -p path] <project>"
   echo "  project     Name of the project to be created."
-  echo "  template    Name of one of the templates at templates/ directory."
+  echo "  template    Path to a template. It could be local directory or remote repo."
   echo "  path        Absolute/relative path where the project directory is to be created."
-  echo "  repo        URL of existing git repository."
 }
 
 
 bro_remove_usage () {
   echo "Usage: bro remove <project>"
   echo "  project     Name of the project to be removed."
+}
+
+
+bro_takeover_usage () {
+	echo "Usage: bro takeover <path> <project>"
+	echo "  path      Path to existing project."
+	echo "  project   Name of the project."
 }
 
 
@@ -335,7 +342,7 @@ bro_exit () {
 # takeover existing projects
 bro_takeover () {
 	if [ ! $# == 2 ] ; then
-		echo "Display usage."
+		bro_takeover_usage
 		return
 	fi
 
