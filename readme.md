@@ -101,6 +101,7 @@ $ bro takeover ~/path/to/awesome-project awesome-project
 ```
 
 To takeover projects in remote repo, use `create` command.
+
 `$ bro create -t git@github.com:auser/awesome-project.git awesome-project`
 
 
@@ -307,6 +308,3 @@ case $2 in
 		;;
 esac
 ```
-
-## Sample `.brotasks`
-...
