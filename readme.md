@@ -104,14 +104,119 @@ To takeover projects in remote repo, use `create` command.
 `$ bro create -t git@github.com:auser/awesome-project.git awesome-project`
 
 ## Tasks
-...
+Bro supports task execution. The tasks are housed in a `.brotasks` file or `.brotasks` directory which houses
+other shell scripts. The syntax for task execution is as follows:
+
+`$ bro [project] <task> [params]`
+
+- project(optional) : Name of the project. The project name is not required if one is at the project's root directory.
+- task : A task inside the project.
+- params(optional) : Parameters passed to the project.
+
+A simple `.brotasks` is given below:
+
+```shell
+#!/bin/sh
+
+# $1, is the name of the project in which this file resides
+# $2, is the task to be executed
+
+case $2 in
+	greet)
+		echo "Hello world !!!"
+	;;
+esac
+```
+
+The tasks in above file can be executed in following ways.
+
+```shell
+# execute tasks from outside a project
+$ bro aproject greet
+=> Hello world !!!
+
+# execte tasks from inside a project
+$ bro aproject
+$ bro greet
+=> Hello world !!!
+```
 
 ### Special tasks
-#### Setup
-...
+There are two tasks which are special to `bro`. These tasks are optional and are executed only if available.
 
-#### Default
-...
+#### setup
+This task is executed while creating a project with `create` command and must reside in a project template.
+An example for setting up a Django and Mithril project is as follows:
+
+```shell
+#!/bin/sh
+
+# $1, is the name of the project in which this file resides
+# $2, is the task to be executed
+
+case $2 in
+	setup)
+		# setup django
+		virtualenv --python=python3 .env
+		source .env/bin/activate
+		pip install django
+		django-admin startproject $1 .
+
+		# setup mithril
+		nvim use 5.6.0
+		npm install --save mithril
+		npm install --save-dev webpack
+
+		echo "Project setup successful"
+		;;
+	greet)
+		echo "Hello world !!!"
+		;;
+esac
+```
+
+#### default
+This task is executed everytime a user requests `bro` to workon a project.
+`bro aproject` executes this task.
+An example task which activates python virtual environment and chooses node version is as follows.
+
+```shell
+#!/bin/sh
+
+# $1, is the name of the project in which this file resides
+# $2, is the task to be executed
+
+case $2 in
+	setup)
+		# setup django
+		virtualenv --python=python3 .env
+		source .env/bin/activate
+		pip install django
+		django-admin startproject $1 .
+
+		# setup mithril
+		nvim use 5.6.0
+		npm install --save mithril
+		npm install --save-dev webpack
+
+		echo "Project setup successful"
+		;;
+	default)
+		source .env/bin/activate
+		nvm use 5.6.0
+
+		echo "Happy hacking"
+		;;
+	greet)
+		echo "Hello world !!!"
+		;;
+esac
+```
+
 
 ## Tmux
+...
+
+
+## Sample `.brotasks`
 ...
