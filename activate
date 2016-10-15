@@ -249,6 +249,7 @@ bro_create () {
     git@*|http:*|https:*|/*|~*)
       template_path=$template
       ;;
+		# TODO: handle absolute path 
     *)
       template_path=`bro_expand "$WORKSTATION/$template"`
       ;;
@@ -329,7 +330,7 @@ bro_remove () {
 
 # list available projects
 bro_list () {
-  echo `ls $BRO_STATION/projects/`
+  ls $BRO_STATION/projects/
 }
 
 

@@ -5,7 +5,7 @@ bro_expand () {
 }
 
 if [ "$WORKSTATION" = "" ]; then
-    read -p "Project directory? ($HOME/projects):" WORKSTATION
+    read -p "WORKSTATION? ($HOME/projects):" WORKSTATION
 
     if [ "$WORKSTATION" = "" ]; then
         WORKSTATION="$HOME/projects"
@@ -19,7 +19,7 @@ if [ "$WORKSTATION" = "" ]; then
 fi
 
 if [ "$BRO_STATION" = "" ]; then
-    read -p "Bro directory? ($HOME/.bro):" BRO_STATION
+    read -p "BRO_STATION? ($HOME/.bro):" BRO_STATION
 
     if [ "$BRO_STATION" = "" ]; then
         BRO_STATION="$HOME/.bro"
