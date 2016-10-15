@@ -103,6 +103,12 @@ $ bro takeover ~/path/to/awesome-project awesome-project
 To takeover projects in remote repo, use `create` command.
 `$ bro create -t git@github.com:auser/awesome-project.git awesome-project`
 
+
+## Kill tmux session
+`$ bro exit`
+
+Kills current tmux session.
+
 ## Tasks
 Bro supports task execution. The tasks are housed in a `.brotasks` file or `.brotasks` directory which houses
 other shell scripts. The syntax for task execution is as follows:
@@ -215,8 +221,92 @@ esac
 
 
 ## Tmux
-...
+`bro` provides essential apis for intereacting with `tmux`.
+These apis are available only inside the task files.
 
+### structure
+`$ structure <project>`
+
+Starts new tmux session.
+
+### window
+`$ window <name>`
+
+Creates new `tmux` window.
+
+### run
+`$ run "<shell command>"`
+
+Sends given shell command to current window or pane.
+
+### vsplit
+`$ vsplit`
+
+Vertically splits current window and selects the left pane.
+
+### hsplit
+`$ hsplit`
+
+Horizontally splits the current window and selects the top pane.
+
+### pane
+`pane <right|down>`
+
+Selects the right pane or the pane below the current pane.
+
+### focus
+`focus <window>`
+
+Selects a window with given name.
+
+### connect
+`connect <project>`
+
+Attach to a tmux session with given project name.
+
+### An example tmux setup is given below
+
+```shell
+#!/bin/sh
+
+# $1, is the name of the project in which this file resides
+# $2, is the task to be executed
+
+case $2 in
+	tmux)
+		project=$1
+
+		structure $project
+			window editor
+				run "bro env"
+				run "nvim"
+			window shell
+				run "bro env"
+				run "python manage.py shell"
+			window terminal
+				run "bro env"
+			window builds
+				vsplit
+					run "bro env"
+					run "python manage.py runserver"
+				pane right
+					hsplit
+						run "bro env"
+						run "webpack --watch"
+					pane down
+						run "bro env"
+						run "cd semantic"
+						run "gulp watch"
+
+		focus editor
+		connect $project
+		;;
+	env)
+		source .env/bin/activate
+		nvm use v5.6.0	
+		;;
+esac
+```
 
 ## Sample `.brotasks`
 ...
