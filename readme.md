@@ -111,8 +111,10 @@ To takeover projects in remote repo, use `create` command.
 Kills current tmux session.
 
 ## Tasks
-Bro supports task execution. The tasks are housed in a `.brotasks` file or `.brotasks` directory which houses
-other shell scripts. The syntax for task execution is as follows:
+Bro supports task execution. The tasks are housed in a `.brotasks` file or `.brotasks` directory.
+If `.brotasks` is a directory, it can have multiple shell scripts.
+Each script can have its own set of switch statements. Look at the `templates` directory of this repo for basic `.brotasks` script.
+The syntax for task execution is as follows:
 
 `$ bro [project] <task> [params]`
 

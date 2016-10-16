@@ -1,0 +1,10 @@
+#!/bin/sh
+
+# $1, is the name of the project
+# $2, is the task to be executed
+
+case $2 in
+    greet)
+        echo "Hello world !!!"
+    ;;
+esac
