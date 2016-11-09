@@ -222,6 +222,16 @@ case $2 in
 esac
 ```
 
+### Add new tasks
+One can easily add tasks script by issuing following command:
+
+`$ bro addtasks <script-name>`
+
+It creates a new script file with given name inside `.brotasks` directory and
+populates it with basic code structure for user's ease.
+
+If the project has `.brotasks` file, it renames the file to `common` and moves it inside `.brotasks`.
+
 
 ## Tmux
 `bro` provides essential apis for intereacting with `tmux`.
