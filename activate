@@ -1,5 +1,5 @@
 #!/bin/sh
-# 3.0.2
+# 3.1.0
 
 bro_expand () {
   echo `sh -c "echo $1"`
@@ -367,6 +367,27 @@ bro_takeover () {
 }
 
 
+# adds new task file to a bro project
+bro_addtasks () {
+	if [ ! $# == 1 ] ; then
+		echo "Please include name of the task file."
+	fi
+
+	# if .brotasks is a file move it inside .brotask directory
+	if [ -f ".brotasks" ] ; then
+		mv .brotasks .brotasksx
+		mkdir .brotasks
+		mv .brotasksx .brotasks/common
+	fi
+
+	if [ -d ".brotasks" ] ; then
+		cp $BRO_STATION/templates/default/.brotasks .brotasks/$1
+		chmod +x .brotasks/$1
+	else
+		echo "Please execute this command inside bro compatible project.."
+	fi
+}
+
 bro () {
   if [ "$#" == "0" ] ; then
     bro_usage
@@ -395,6 +416,10 @@ bro () {
 			shift
 			bro_takeover $@
       ;;
+		addtasks)
+			shift
+			bro_newtask $@
+			;;
     *)
       bro_task $@
       ;;
@@ -406,10 +431,10 @@ bro_autocomplete_tasks () {
 
   if [ -f $1 ]; then
     local_commands="$(sed -n 's_\s*\(\w\))_\1_p' $1)"
-    COMPREPLY=( $(compgen -W '$local_commands create remove list takeover exit $projects' -- $cur) )
+    COMPREPLY=( $(compgen -W '$local_commands create remove list takeover addtasks exit $projects' -- $cur) )
   else
     local_commands="$(find $1 -type f -print0 | xargs -0 sed -n 's_\s*\(\w\))_\1_p')"
-    COMPREPLY=( $(compgen -W '$local_commands create remove list takeover exit $projects' -- $cur) )
+    COMPREPLY=( $(compgen -W '$local_commands create remove list takeover addtasks exit $projects' -- $cur) )
   fi
 }
 
@@ -428,7 +453,7 @@ _bro () {
       tasks_path="./.brotasks"
       bro_autocomplete_tasks $tasks_path
     else
-      COMPREPLY=( $(compgen -W 'create remove list takeover exit $projects' -- $cur) )
+      COMPREPLY=( $(compgen -W 'create remove list takeover addtasks exit $projects' -- $cur) )
     fi
     return 0
   fi
