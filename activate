@@ -249,7 +249,6 @@ bro_create () {
     git@*|http:*|https:*|/*|~*)
       template_path=$template
       ;;
-		# TODO: handle absolute path 
     *)
       template_path=`bro_expand "$WORKSTATION/$template"`
       ;;
