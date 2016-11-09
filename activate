@@ -1,5 +1,5 @@
 #!/bin/sh
-# 3.0.0
+# 3.0.2
 
 bro_expand () {
   echo `sh -c "echo $1"`
@@ -279,7 +279,7 @@ bro_create () {
       cp -a $template_path/. $project_path/
 
       if [ ! -f $project_path/.brotasks ] ; then
-      	chmod +x $project_path/.brotasks
+      	chmod +x $project_path/.brotasks/*
       else
         chmod +x $project_path/.brotasks
       fi
