@@ -3,6 +3,7 @@ A companion for managing projects.
 
 ## Features
 - create project from predefined templates (local or remote)
+- jump to project directory (no more cd to long path)
 - support for tasks
 - tmux integration
 
@@ -235,6 +236,7 @@ If the project has `.brotasks` file, it renames the file to `common` and moves i
 
 ## Tmux
 `bro` provides essential apis for intereacting with `tmux`.
+`bro` requires `tmux` 2 or greater.
 These apis are available only inside the task files.
 
 ### structure
