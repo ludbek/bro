@@ -106,11 +106,6 @@ To takeover projects in remote repo, use `create` command.
 `$ bro create -t git@github.com:auser/awesome-project.git awesome-project`
 
 
-## Kill tmux session
-`$ bro exit`
-
-Kills current tmux session.
-
 ## Tasks
 Bro supports task execution. The tasks are housed in a `.brotasks` file or `.brotasks` directory.
 If `.brotasks` is a directory, it can have multiple shell scripts.
@@ -278,6 +273,12 @@ Selects a window with given name.
 `connect <project>`
 
 Attach to a tmux session with given project name.
+
+### Kill tmux session
+`$ bro exit`
+
+Kills current tmux session.
+
 
 ### An example tmux setup is given below
 
