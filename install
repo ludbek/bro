@@ -1,38 +1,47 @@
 #!/bin/sh
 
+bro_repo=https://github.com/ludbek/bro.git
+
 bro_expand () {
   echo `sh -c "echo $1"`
 }
 
+# Check if git is installed
+command -v git > /dev/null || {
+    echo "Please install 'git' first."
+    exit 2;
+}
+
+
+# Abort if 'bro' is already installed
+if [ -d $BRO_STATION  ]; then
+    echo "'bro' is already installed at '$BRO_STATION'. Please use 'git' to update it.";
+    exit 1;
+fi
+
+
+# Get location where bro will be installed
+read -p "BRO_STATION? ($HOME/.bro):" BRO_STATION
+if [ "$BRO_STATION" = ""  ]; then
+    BRO_STATION="$HOME/.bro"
+fi
+
+# Get home directory for projects
+read -p "WORKSTATION? ($HOME/projects):" WORKSTATION
 if [ "$WORKSTATION" = "" ]; then
-    read -p "WORKSTATION? ($HOME/projects):" WORKSTATION
-
-    if [ "$WORKSTATION" = "" ]; then
-        WORKSTATION="$HOME/projects"
-    fi
-
-    # Installing for the first time
-    mkdir -p `bro_expand $WORKSTATION`
-
-    echo "\n### Bro" >> ~/.bashrc
-    echo "export WORKSTATION=$WORKSTATION" >> ~/.bashrc
+    WORKSTATION="$HOME/projects"
 fi
+mkdir -p `bro_expand $WORKSTATION`
 
-if [ "$BRO_STATION" = "" ]; then
-    read -p "BRO_STATION? ($HOME/.bro):" BRO_STATION
-
-    if [ "$BRO_STATION" = "" ]; then
-        BRO_STATION="$HOME/.bro"
-    fi
-
-    mkdir -p `bro_expand $BRO_STATION`
-
-    ACTIVATE=$BRO_STATION/activate
-    echo "export BRO_STATION=$BRO_STATION" >> ~/.bashrc
-    echo "source $ACTIVATE" >> ~/.bashrc
-fi
+# Clone bro to home directory
+git clone  $bro_repo $BRO_STATION || {
+    echo "Could not install 'bro'. Please report the issue at 'https://github.com/ludbek/bro/issues'."
+    exit 2
+}
 
 
-# copy new version of bro to $BRO_STATION
-mkdir -p `bro_expand $BRO_STATION`
-cp -r ./* `bro_expand $BRO_STATION`
+# Register 'bro' config files at .bashrc
+echo "\n### Bro" >> ~/.bashrc
+echo "export BRO_STATION=$BRO_STATION" >> ~/.bashrc
+echo "export WORKSTATION=$WORKSTATION" >> ~/.bashrc
+echo "source $BRO_STATION/activate" >> ~/.bashrc

@@ -8,14 +8,12 @@ A companion for managing projects.
 - tmux integration
 
 ## Installtion
-Clone this repo and execute the `install` script.
+Issue following commands for installation.
 
 ```shell
-$ git clone https://github.com/ludbek/bro.git
-$ cd bro
-$ ./install
-$ WORKSTATION? ($HOME/projects):     # directory where Bro will store projects
-$ BRO_STATION? ($HOME/.bro):         # directory where Bro file will reside
+$ curl -o- https://raw.githubusercontent.com/ludbek/bro/master/install | bash
+  BRO_STATION? ($HOME/.bro):         # directory where Bro will be installed
+  WORKSTATION? ($HOME/projects):     # directory where Bro will store projects
 $ source ~/.bashrc
 ```
 

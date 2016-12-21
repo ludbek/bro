@@ -1,5 +1,5 @@
 #!/bin/sh
-# 3.1.1
+# 3.2.0
 
 bro_expand () {
   echo `sh -c "echo $1"`
