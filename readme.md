@@ -11,7 +11,8 @@ A companion for managing projects.
 Issue following commands for installation.
 
 ```shell
-$ curl -o- https://raw.githubusercontent.com/ludbek/bro/master/install | bash
+
+$ curl -o  /tmp/bro https://raw.githubusercontent.com/ludbek/bro/master/install && sh /tmp/bro
   BRO_STATION? ($HOME/.bro):         # directory where Bro will be installed
   WORKSTATION? ($HOME/projects):     # directory where Bro will store projects
 $ source ~/.bashrc
