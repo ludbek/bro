@@ -1,5 +1,5 @@
 #!/bin/sh
-# 3.2.1
+# 3.2.2
 
 bro_expand () {
   echo `sh -c "echo $1"`
@@ -346,23 +346,26 @@ bro_takeover () {
 		return
 	fi
 
-	project_reference=$BRO_STATION/projects/$2
+    project_name=$2
+	project_reference=$BRO_STATION/projects/$project_name
+    project_path=`cd $1 && pwd`
 
 	if [ -f $project_reference ] ; then
 		echo "Project already exists."
 		return
 	fi
 
-	if [ ! -d $1 ] ; then
-		echo "$1 does not exist."
+	if [ ! -d $project_path ] ; then
+		echo "$project_path does not exist."
 		return
 	fi
 
 	## create project reference file
 	touch $project_reference
-	echo `cd $1 && pwd` > $project_reference
+	echo $project_path > $project_reference
 
-	bro_setup $2
+    cd $project_path
+    bro_route_task $project_name default
 }
 
 
