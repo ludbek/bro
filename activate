@@ -1,5 +1,5 @@
 #!/bin/sh
-# 3.2.0
+# 3.2.1
 
 bro_expand () {
   echo `sh -c "echo $1"`
@@ -360,7 +360,7 @@ bro_takeover () {
 
 	## create project reference file
 	touch $project_reference
-	echo "$1" > $project_reference
+	echo `cd $1 && pwd` > $project_reference
 
 	bro_setup $2
 }
