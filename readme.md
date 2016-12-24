@@ -273,12 +273,6 @@ Selects a window with given name.
 
 Attach to a tmux session with given project name.
 
-### Kill tmux session
-`$ bro exit`
-
-Kills current tmux session.
-
-
 ### An example tmux setup is given below
 
 ```shell
