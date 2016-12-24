@@ -1,50 +1,50 @@
 #!/bin/sh
-# 3.2.3
+# 3.2.4
 
 bro_expand () {
-  echo `sh -c "echo $1"`
+	echo `sh -c "echo $1"`
 }
 
 bro_error () {
-  printf "Aye! $1.\n"
+	printf "Aye! $1.\n"
 }
 
 bro_usage () {
-  echo "Project management: bro <subcommand>"
-  echo "Available subcommands are:"
-  echo "  create     Create a new project."
-  echo "  list       List available projects to work on."
-  echo "  remove     Delete an existing project."
-  echo "  takeover   Let bro handle existing project."
-  echo "  addtasks   Add tasks file at .brotasks directory."
-  echo "Try 'bro <subcommand>' for details."
-  echo "------------------------------------------------"
-  echo "Task execution: bro [project] <task> [params]"
-  echo "  project    Project name. (Not required inside project directory.)"
-  echo "  task       Task at .brotasks."
-  echo "  params     Parameters for the task."
+	echo "Project management: bro <subcommand>"
+	echo "Available subcommands are:"
+	echo "  create     Create a new project."
+	echo "  list       List available projects to work on."
+	echo "  remove     Delete an existing project."
+	echo "  takeover   Let bro handle existing project."
+	echo "  addtasks   Add tasks file at .brotasks directory."
+	echo "Try 'bro <subcommand>' for details."
+	echo "------------------------------------------------"
+	echo "Task execution: bro [project] <task> [params]"
+	echo "  project    Project name. (Not required inside project directory.)"
+	echo "  task       Task at .brotasks."
+	echo "  params     Parameters for the task."
 }
 
 
 bro_task_usage () {
-  echo "Usage: bro [project] <task> [params]"
-  echo "  project    Project name. (Not required inside project directory.)"
-  echo "  task       Task at .brotasks."
-  echo "  params     Parameters for the task."
+	echo "Usage: bro [project] <task> [params]"
+	echo "  project    Project name. (Not required inside project directory.)"
+	echo "  task       Task at .brotasks."
+	echo "  params     Parameters for the task."
 }
 
 
 bro_create_usage () {
-  echo "Usage: bro create [-t template -p path] <project>"
-  echo "  project     Name of the project to be created."
-  echo "  template    Path to a template. It could be local directory or remote repo."
-  echo "  path        Absolute/relative path where the project directory is to be created."
+	echo "Usage: bro create [-t template -p path] <project>"
+	echo "  project     Name of the project to be created."
+	echo "  template    Path to a template. It could be local directory or remote repo."
+	echo "  path        Absolute/relative path where the project directory is to be created."
 }
 
 
 bro_remove_usage () {
-  echo "Usage: bro remove <project>"
-  echo "  project     Name of the project to be removed."
+	echo "Usage: bro remove <project>"
+	echo "  project     Name of the project to be removed."
 }
 
 
@@ -58,278 +58,278 @@ bro_takeover_usage () {
 # setup a project
 # like installing dependencies, git, preparing project structure etc
 bro_setup () {
-  project=$1
-  project_reference=`bro_expand "$BRO_STATION/projects/$project"`
+	project=$1
+	project_reference=`bro_expand "$BRO_STATION/projects/$project"`
 
-  # check if the project exists
-  if [ ! -e "$project_reference" ]; then
-    bro_error "the project \"$project\" does not exist.\n Create it with $ bro create $1"
-    return 1
-  fi
+	# check if the project exists
+	if [ ! -e "$project_reference" ]; then
+		bro_error "the project \"$project\" does not exist.\n Create it with $ bro create $1"
+		return 1
+	fi
 
-  project_path=`bro_expand $(sed '1p' $project_reference)`
-  cd $project_path
+	project_path=`bro_expand $(sed '1p' $project_reference)`
+	cd $project_path
 
-  bro_route_task $project setup
+	bro_route_task $project setup
 }
 
 
 bro_remote_task () {
-  # check for proper number of arguments
-  # must have at least two arguments
-  if [ "$#" == "1" ] ; then
-    bro_task_usage
-    return 1
-  fi
+	# check for proper number of arguments
+	# must have at least two arguments
+	if [ "$#" == "1" ] ; then
+		bro_task_usage
+		return 1
+	fi
 
-  # get project name
-  project=$1
-  project_reference=`bro_expand "$BRO_STATION/projects/$project"`
+	# get project name
+	project=$1
+	project_reference=`bro_expand "$BRO_STATION/projects/$project"`
 
-  # check if the project exists
-  if [ ! -e "$project_reference" ]; then
-    bro_error "the project \"$1\" does not exist.\n Create it with $ bro create $1"
-    return 1
-  fi
+	# check if the project exists
+	if [ ! -e "$project_reference" ]; then
+		bro_error "the project \"$1\" does not exist.\n Create it with $ bro create $1"
+		return 1
+	fi
 
-  project_path=`bro_expand $(sed '1p' $project_reference)`
-  cd $project_path
+	project_path=`bro_expand $(sed '1p' $project_reference)`
+	cd $project_path
 
-  bro_route_task $@
+	bro_route_task $@
 }
 
 bro_local_task () {
-  project=$(basename "`pwd`")
+	project=$(basename "`pwd`")
 
-  bro_route_task $project $@
+	bro_route_task $project $@
 }
 
 bro_route_task () {
-  if [ -d .brotasks ] ; then
-    for filename in ./.brotasks/* ; do
-      if [ -f $filename ] ; then
-        source $filename $@
-      fi
-    done
-  else
-    if [ -f .brotasks ] ; then
-      source ./.brotasks $@
-    fi
-  fi
+	if [ -d .brotasks ] ; then
+		for filename in ./.brotasks/* ; do
+			if [ -f $filename ] ; then
+				source $filename $@
+			fi
+		done
+	else
+		if [ -f .brotasks ] ; then
+			source ./.brotasks $@
+		fi
+	fi
 }
 
 # execute command at .brofile
 bro_task () {
-  structure () {
-    export BRO_TMUX_SESSION=$1 
-    tmux new -d -s $1
-  }
+	structure () {
+		export BRO_TMUX_SESSION=$1
+		tmux new -d -s $1
+	}
 
-  window () {
-    tmux new-window -n $1
-  }
+	window () {
+		tmux new-window -n $1
+	}
 
-  run () {
-    tmux send "$@" ENTER
-  }
+	run () {
+		tmux send "$@" ENTER
+	}
 
-  vsplit () {
-    tmux split-window -h -b
-  }
+	vsplit () {
+		tmux split-window -h -b
+	}
 
-  hsplit () {
-    tmux split-window -b
-  }
+	hsplit () {
+		tmux split-window -b
+	}
 
 
-  pane () {
-    case $1 in
-      up)
-        tmux select-pane -U
-        ;;
-      right)
-        tmux select-pane -R
-        ;;
-      down)
-        tmux select-pane -D
-        ;;
-      left)
-        tmux select-pane -L
-        ;;
-    esac
-  }
+	pane () {
+		case $1 in
+			up)
+				tmux select-pane -U
+				;;
+			right)
+				tmux select-pane -R
+				;;
+			down)
+				tmux select-pane -D
+				;;
+			left)
+				tmux select-pane -L
+				;;
+		esac
+	}
 
-  focus () {
-    if [[ $# == 2 ]]; then
-      tmux select-window -t $1
-      tmux select-pane -t $2
-    elif [[ $# == 1 ]]; then
-      tmux select-window -t $1
-    fi
-  }
+	focus () {
+		if [[ $# == 2 ]]; then
+			tmux select-window -t $1
+			tmux select-pane -t $2
+		elif [[ $# == 1 ]]; then
+			tmux select-window -t $1
+		fi
+	}
 
-  connect () {
-    tmux kill-window -t 0
-    tmux a -t $1
-  }
+	connect () {
+		tmux kill-window -t 0
+		tmux a -t $1
+	}
 
-  # distinguish remote and local task
-  possible_project=$1
-  project_reference=`bro_expand "$BRO_STATION/projects/$possible_project"`
+	# distinguish remote and local task
+	possible_project=$1
+	project_reference=`bro_expand "$BRO_STATION/projects/$possible_project"`
 
-  if [[ $# == 1 ]] && [[ -f "$project_reference" ]]; then
-    bro_remote_task $possible_project default
-  elif [[ $# == 1 ]] && [[ ! -e ".brotasks" ]]; then
-    bro_usage
-  elif [[ ! -e "$project_reference" ]] && [[ -e ".brotasks" ]]; then
-    bro_local_task $@
-  else
-    bro_remote_task $@
-  fi
+	if [[ $# == 1 ]] && [[ -f "$project_reference" ]]; then
+		bro_remote_task $possible_project default
+	elif [[ $# == 1 ]] && [[ ! -e ".brotasks" ]]; then
+		bro_usage
+	elif [[ ! -e "$project_reference" ]] && [[ -e ".brotasks" ]]; then
+		bro_local_task $@
+	else
+		bro_remote_task $@
+	fi
 
-  unset -f structure
-  unset -f window
-  unset -f run
-  unset -f vsplit
-  unset -f hsplit
-  unset -f pane
-  unset -f focus
-  unset -f connect
+	unset -f structure
+	unset -f window
+	unset -f run
+	unset -f vsplit
+	unset -f hsplit
+	unset -f pane
+	unset -f focus
+	unset -f connect
 }
 
 
 # creates a project
 bro_create () {
-  local OPTIND template path opt project_path project_reference template_path
+	local OPTIND template path opt project_path project_reference template_path
 
-  while getopts :t:p: opt; do
-    case  $opt in
-      t) template=$OPTARG;;
-      p) path=$OPTARG;;
-      *) echo "Invalid option: -" $OPTARG;;
-    esac
-  done
+	while getopts :t:p: opt; do
+		case  $opt in
+			t) template=$OPTARG;;
+			p) path=$OPTARG;;
+			*) echo "Invalid option: -" $OPTARG;;
+		esac
+	done
 
-  ## get project name
-  shift $(($OPTIND-1))
-  project=$@
+	## get project name
+	shift $(($OPTIND-1))
+	project=$@
 
-  if [ "$project" = "" ] ; then
-    bro_error "you missed the project name"
-    bro_create_usage
-    return 1
-  fi
+	if [ "$project" = "" ] ; then
+		bro_error "you missed the project name"
+		bro_create_usage
+		return 1
+	fi
 
-  ## set project path
-  if [ "$path" = "" ] ; then
-    project_path=`bro_expand "$WORKSTATION/$project"`
-  else
-    if [ "$(echo $path | sed -n "/[~\/]/p")" = "" ] ; then
-      mkdir -p `bro_expand "$WORKSTATION/$path"`
-      project_path=`bro_expand "$WORKSTATION/$path/$project"`
-    else
-      project_path=`bro_expand "$path/$project"`
-    fi
-  fi
-  ## set project reference path
-  project_reference=`bro_expand "$BRO_STATION/projects/$project"`
+	## set project path
+	if [ "$path" = "" ] ; then
+		project_path=`bro_expand "$WORKSTATION/$project"`
+	else
+		if [ "$(echo $path | sed -n "/[~\/]/p")" = "" ] ; then
+			mkdir -p `bro_expand "$WORKSTATION/$path"`
+			project_path=`bro_expand "$WORKSTATION/$path/$project"`
+		else
+			project_path=`bro_expand "$path/$project"`
+		fi
+	fi
+	## set project reference path
+	project_reference=`bro_expand "$BRO_STATION/projects/$project"`
 
-  ### check if the project already exists
-  if [ -e $project_reference ] ; then
-    bro_error "the project \"$project\" already exists"
-    return 1
-  fi
+	### check if the project already exists
+	if [ -e $project_reference ] ; then
+		bro_error "the project \"$project\" already exists"
+		return 1
+	fi
 
-  ## set template
-  case $template in
-    "")
-      template_path=`bro_expand "$BRO_STATION/templates/default"`
-      ;;
-    # templates/name or name
-    git@*|http:*|https:*|/*|~*)
-      template_path=$template
-      ;;
-    *)
-      template_path=`bro_expand "$WORKSTATION/$template"`
-      ;;
-  esac
+	## set template
+	case $template in
+		"")
+			template_path=`bro_expand "$BRO_STATION/templates/default"`
+			;;
+		# templates/name or name
+		git@*|http:*|https:*|/*|~*)
+			template_path=$template
+			;;
+		*)
+			template_path=`bro_expand "$WORKSTATION/$template"`
+			;;
+	esac
 
-  ## create project directory at specified path
-  case $template_path in
-    # http or git
-    git@*|http:*|https:*)
-      git clone $template_path $project_path
+	## create project directory at specified path
+	case $template_path in
+		# http or git
+		git@*|http:*|https:*)
+			git clone $template_path $project_path
 
-      if [ ! -e $project_path ] ; then
-        bro_error "it seems template at \"$template_path\" does not exist.\nPlease check the url or the internet connection."
-        return
-      fi
-      ;;
-    # local path
-    *)
-      if [ ! -e $template_path ] ; then
-        bro_error "the bro template \"$template\" does not exist. Please create one at $WORKSTATION"
-        return
-      fi
+			if [ ! -e $project_path ] ; then
+				bro_error "it seems template at \"$template_path\" does not exist.\nPlease check the url or the internet connection."
+				return
+			fi
+			;;
+		# local path
+		*)
+			if [ ! -e $template_path ] ; then
+				bro_error "the bro template \"$template\" does not exist. Please create one at $WORKSTATION"
+				return
+			fi
 
-      mkdir -p $project_path
+			mkdir -p $project_path
 
-      ## copy files from template to project directory
-      cp -a $template_path/. $project_path/
+			## copy files from template to project directory
+			cp -a $template_path/. $project_path/
 
-      if [ ! -f $project_path/.brotasks ] ; then
-      	chmod +x $project_path/.brotasks/*
-      else
-        chmod +x $project_path/.brotasks
-      fi
-      ;;
-  esac
+			if [ ! -f $project_path/.brotasks ] ; then
+				chmod +x $project_path/.brotasks/*
+			else
+				chmod +x $project_path/.brotasks
+			fi
+			;;
+	esac
 
 
-  ## create project reference file
-  touch $project_reference
-  echo "$project_path" > $project_reference
+	## create project reference file
+	touch $project_reference
+	echo "$project_path" > $project_reference
 
-  ## setup project
-  bro_setup $project
+	## setup project
+	bro_setup $project
 }
 
 # remove a project
 bro_remove () {
-  if [ "$1" == "" ] ; then
-    bro_remove_usage
-    return 1
-  fi
+	if [ "$1" == "" ] ; then
+		bro_remove_usage
+		return 1
+	fi
 
-  project=$1
-  project_reference=`bro_expand "$BRO_STATION/projects/$project"`
+	project=$1
+	project_reference=`bro_expand "$BRO_STATION/projects/$project"`
 
-  # check if the project already exists
-  if [ ! -e "$project_reference" ]; then
-    bro_error "the project \"$project\" does not exist"
-    return 1
-  fi
+	# check if the project already exists
+	if [ ! -e "$project_reference" ]; then
+		bro_error "the project \"$project\" does not exist"
+		return 1
+	fi
 
-  rm -f $project_reference
+	rm -f $project_reference
 
-  # echo "Yo! are sure you wanna remove $project?"
-  # echo "This will remove the project directory as well."
-  # read -p "Do you still wish to continue? (Y/n):" confirm
+	# echo "Yo! are sure you wanna remove $project?"
+	# echo "This will remove the project directory as well."
+	# read -p "Do you still wish to continue? (Y/n):" confirm
 
-  # if [ "$confirm" = "" ] || [ "$confirm" = "y" ] || [ "$confirm" = "Y" ]; then
-  #   rm -rf $project_path
+	# if [ "$confirm" = "" ] || [ "$confirm" = "y" ] || [ "$confirm" = "Y" ]; then
+	#   rm -rf $project_path
 
-  #   echo "Successfully removed project $project."
-  #   return 0
-  # else
-  #   echo "Aborting operation for good !!!"
-  # fi
+	#   echo "Successfully removed project $project."
+	#   return 0
+	# else
+	#   echo "Aborting operation for good !!!"
+	# fi
 }
 
 
 # list available projects
 bro_list () {
-  ls $BRO_STATION/projects/
+	ls $BRO_STATION/projects/
 }
 
 
@@ -340,9 +340,9 @@ bro_takeover () {
 		return
 	fi
 
-    project_name=$2
+		project_name=$2
 	project_reference=$BRO_STATION/projects/$project_name
-    project_path=`cd $1 && pwd`
+		project_path=`cd $1 && pwd`
 
 	if [ -f $project_reference ] ; then
 		echo "Project already exists."
@@ -358,8 +358,8 @@ bro_takeover () {
 	touch $project_reference
 	echo $project_path > $project_reference
 
-    cd $project_path
-    bro_route_task $project_name default
+		cd $project_path
+		bro_route_task $project_name default
 }
 
 
@@ -385,103 +385,103 @@ bro_addtasks () {
 }
 
 bro () {
-  if [ "$#" == "0" ] ; then
-    bro_usage
-    return 1
-  fi
+	if [ "$#" == "0" ] ; then
+		bro_usage
+		return 1
+	fi
 
-  cmd=$1
-  project=$2
+	cmd=$1
+	project=$2
 
-  # local OPTIND
-  case $cmd in
-    create)
-      shift
-      bro_create $@
-      ;;
-    remove)
-      bro_remove $project
-      ;;
-    list)
-      bro_list
-      ;;
-    takeover)
-        shift
-        bro_takeover $@
-      ;;
-    addtasks)
-        shift
-        bro_addtasks $@
-        ;;
-    *)
-      bro_task $@
-      ;;
-  esac
+	# local OPTIND
+	case $cmd in
+		create)
+			shift
+			bro_create $@
+			;;
+		remove)
+			bro_remove $project
+			;;
+		list)
+			bro_list
+			;;
+		takeover)
+				shift
+				bro_takeover $@
+			;;
+		addtasks)
+				shift
+				bro_addtasks $@
+				;;
+		*)
+			bro_task $@
+			;;
+	esac
 }
 
 bro_autocomplete_tasks () {
-  projects=$(ls $BRO_STATION/projects)
+	projects=$(ls $BRO_STATION/projects)
 
-  if [ -f $1 ]; then
-    local_commands="$(sed -n 's_\s*\(\w\))_\1_p' $1)"
-    COMPREPLY=( $(compgen -W '$local_commands create remove list takeover addtasks $projects' -- $cur) )
-  else
-    local_commands="$(find $1 -type f -print0 | xargs -0 sed -n 's_\s*\(\w\))_\1_p')"
-    COMPREPLY=( $(compgen -W '$local_commands create remove list takeover addtasks $projects' -- $cur) )
-  fi
+	if [ -f $1 ]; then
+		local_commands="$(sed -n 's_\s*\(\w\))_\1_p' $1)"
+		COMPREPLY=( $(compgen -W '$local_commands create remove list takeover addtasks $projects' -- $cur) )
+	else
+		local_commands="$(find $1 -type f -print0 | xargs -0 sed -n 's_\s*\(\w\))_\1_p')"
+		COMPREPLY=( $(compgen -W '$local_commands create remove list takeover addtasks $projects' -- $cur) )
+	fi
 }
 
 # autocomplete
 _bro () {
-  local cur prev
+	local cur prev
 
-  cur=${COMP_WORDS[COMP_CWORD]}
-  prev=${COMP_WORDS[COMP_CWORD-1]}
+	cur=${COMP_WORDS[COMP_CWORD]}
+	prev=${COMP_WORDS[COMP_CWORD-1]}
 
-  projects=$(ls $BRO_STATION/projects)
+	projects=$(ls $BRO_STATION/projects)
 
-  if (( $COMP_CWORD <= 1 )); then
-    # auto complete local tasks
-    if [ -e "./.brotasks" ]; then
-      tasks_path="./.brotasks"
-      bro_autocomplete_tasks $tasks_path
-    else
-      COMPREPLY=( $(compgen -W 'create remove list takeover addtasks $projects' -- $cur) )
-    fi
-    return 0
-  fi
+	if (( $COMP_CWORD <= 1 )); then
+		# auto complete local tasks
+		if [ -e "./.brotasks" ]; then
+			tasks_path="./.brotasks"
+			bro_autocomplete_tasks $tasks_path
+		else
+			COMPREPLY=( $(compgen -W 'create remove list takeover addtasks $projects' -- $cur) )
+		fi
+		return 0
+	fi
 
-  # autocomplete options for create command
-  if [[ "$prev" == "create" ]]; then
-    COMPREPLY=( $(compgen -W '-p -t' -- $cur) )
-    return 0
-  fi
+	# autocomplete options for create command
+	if [[ "$prev" == "create" ]]; then
+		COMPREPLY=( $(compgen -W '-p -t' -- $cur) )
+		return 0
+	fi
 
-  # autocomplete project names for remove command
-  if [[ "$prev" == "remove" ]]; then
-    COMPREPLY=( $(compgen -W '$projects' -- $cur) )
-    return 0
-  fi
+	# autocomplete project names for remove command
+	if [[ "$prev" == "remove" ]]; then
+		COMPREPLY=( $(compgen -W '$projects' -- $cur) )
+		return 0
+	fi
 
-  if [[ "$prev" == "takeover" ]]; then
+	if [[ "$prev" == "takeover" ]]; then
 		COMPREPLY=( $(compgen -f -- $cur) )
-    return 0
-  fi
+		return 0
+	fi
 
-  # no auto completion for list command
-  if [[ "$prev" == "list" ]]; then
-    return 0
-  fi
+	# no auto completion for list command
+	if [[ "$prev" == "list" ]]; then
+		return 0
+	fi
 
-  # remote command completion
-  if (( $COMP_CWORD == 2 )); then
-    project_reference=`bro_expand "$BRO_STATION/projects/$prev"`
-    if [ -e "$project_reference" ]; then
-      project_path=`bro_expand $(sed '1p' $project_reference)`
-      tasks_path=$project_path/.brotasks
-      bro_autocomplete_tasks $tasks_path
-    fi
-  fi
+	# remote command completion
+	if (( $COMP_CWORD == 2 )); then
+		project_reference=`bro_expand "$BRO_STATION/projects/$prev"`
+		if [ -e "$project_reference" ]; then
+			project_path=`bro_expand $(sed '1p' $project_reference)`
+			tasks_path=$project_path/.brotasks
+			bro_autocomplete_tasks $tasks_path
+		fi
+	fi
 }
 
 complete -F _bro bro
