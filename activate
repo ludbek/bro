@@ -1,5 +1,5 @@
 #!/bin/sh
-# 3.2.4
+# 3.2.5
 
 bro_expand () {
 	echo `sh -c "echo $1"`
@@ -340,9 +340,9 @@ bro_takeover () {
 		return
 	fi
 
-		project_name=$2
+	project_name=$2
 	project_reference=$BRO_STATION/projects/$project_name
-		project_path=`cd $1 && pwd`
+	project_path=`cd $1 && pwd`
 
 	if [ -f $project_reference ] ; then
 		echo "Project already exists."
@@ -358,8 +358,8 @@ bro_takeover () {
 	touch $project_reference
 	echo $project_path > $project_reference
 
-		cd $project_path
-		bro_route_task $project_name default
+	cd $project_path
+	bro_route_task $project_name default
 }
 
 
@@ -406,13 +406,13 @@ bro () {
 			bro_list
 			;;
 		takeover)
-				shift
-				bro_takeover $@
+			shift
+			bro_takeover $@
 			;;
 		addtasks)
-				shift
-				bro_addtasks $@
-				;;
+			shift
+			bro_addtasks $@
+			;;
 		*)
 			bro_task $@
 			;;

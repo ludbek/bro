@@ -8,35 +8,35 @@ bro_expand () {
 
 # Check if git is installed
 command -v git > /dev/null || {
-		echo "Please install 'git' first."
-		exit 2;
+	echo "Please install 'git' first."
+	exit 2;
 }
 
 
 # Abort if 'bro' is already installed
 if [ -d $BRO_STATION  ]; then
-		echo "'bro' is already installed at '$BRO_STATION'. Please use 'git' to update it.";
-		exit 1;
+	echo "'bro' is already installed at '$BRO_STATION'. Please use 'git' to update it.";
+	exit 1;
 fi
 
 
 # Get location where bro will be installed
 read -p "BRO_STATION? ($HOME/.bro):" BRO_STATION
 if [ "$BRO_STATION" = ""  ]; then
-		BRO_STATION="$HOME/.bro"
+	BRO_STATION="$HOME/.bro"
 fi
 
 # Get home directory for projects
 read -p "WORKSTATION? ($HOME/projects):" WORKSTATION
 if [ "$WORKSTATION" = "" ]; then
-		WORKSTATION="$HOME/projects"
+	WORKSTATION="$HOME/projects"
 fi
 mkdir -p `bro_expand $WORKSTATION`
 
 # Clone bro to home directory
 git clone  $bro_repo $BRO_STATION || {
-		echo "Could not install 'bro'. Please report the issue at 'https://github.com/ludbek/bro/issues'."
-		exit 2
+	echo "Could not install 'bro'. Please report the issue at 'https://github.com/ludbek/bro/issues'."
+	exit 2
 }
 
 
