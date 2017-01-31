@@ -12,18 +12,16 @@ command -v git > /dev/null || {
 	exit 2;
 }
 
+# Get location where bro will be installed
+read -p "BRO_STATION? ($HOME/.bro):" BRO_STATION
+if [ "$BRO_STATION" = ""  ]; then
+	BRO_STATION="$HOME/.bro"
+fi
 
 # Abort if 'bro' is already installed
 if [ -d $BRO_STATION  ]; then
 	echo "'bro' is already installed at '$BRO_STATION'. Please use 'git' to update it.";
 	exit 1;
-fi
-
-
-# Get location where bro will be installed
-read -p "BRO_STATION? ($HOME/.bro):" BRO_STATION
-if [ "$BRO_STATION" = ""  ]; then
-	BRO_STATION="$HOME/.bro"
 fi
 
 # Get home directory for projects
