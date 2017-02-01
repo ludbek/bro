@@ -1,6 +1,6 @@
 #!/bin/sh
 
-bro_repo=https://github.com/ludbek/bro.git
+bro_repo=https://github.com/acpmasquerade/bro.git
 
 bro_expand () {
 	echo `sh -c "echo $1"`
@@ -25,15 +25,15 @@ if [ -d $BRO_STATION  ]; then
 fi
 
 # Get home directory for projects
-read -p "BRO_PROJECTS_DIR? ($HOME/projects):" BRO_PROJECTS_DIR
+read -p "BRO_PROJECTS_DIR? ($HOME/bro_projects):" BRO_PROJECTS_DIR
 if [ "$BRO_PROJECTS_DIR" = "" ]; then
-	BRO_PROJECTS_DIR="$HOME/projects"
+	BRO_PROJECTS_DIR="$HOME/bro_projects"
 fi
 mkdir -p `bro_expand $BRO_PROJECTS_DIR`
 
 # Clone bro to home directory
 git clone  $bro_repo $BRO_STATION || {
-	echo "Could not install 'bro'. Please report the issue at 'https://github.com/ludbek/bro/issues'."
+	echo "Could not install 'bro'. Please report the issue at 'https://github.com/acpmasquerade/bro/issues'."
 	exit 2
 }
 
