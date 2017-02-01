@@ -222,11 +222,11 @@ bro_create () {
 
 	## set project path
 	if [ "$path" = "" ] ; then
-		project_path=`bro_expand "$WORKSTATION/$project"`
+		project_path=`bro_expand "$BRO_PROJECTS_DIR/$project"`
 	else
 		if [ "$(echo $path | sed -n "/[~\/]/p")" = "" ] ; then
-			mkdir -p `bro_expand "$WORKSTATION/$path"`
-			project_path=`bro_expand "$WORKSTATION/$path/$project"`
+			mkdir -p `bro_expand "$BRO_PROJECTS_DIR/$path"`
+			project_path=`bro_expand "$BRO_PROJECTS_DIR/$path/$project"`
 		else
 			project_path=`bro_expand "$path/$project"`
 		fi
@@ -250,7 +250,7 @@ bro_create () {
 			template_path=$template
 			;;
 		*)
-			template_path=`bro_expand "$WORKSTATION/$template"`
+			template_path=`bro_expand "$BRO_PROJECTS_DIR/$template"`
 			;;
 	esac
 
@@ -268,7 +268,7 @@ bro_create () {
 		# local path
 		*)
 			if [ ! -e $template_path ] ; then
-				bro_error "the bro template \"$template\" does not exist. Please create one at $WORKSTATION"
+				bro_error "the bro template \"$template\" does not exist. Please create one at $BRO_PROJECTS_DIR"
 				return
 			fi
 

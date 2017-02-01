@@ -25,11 +25,11 @@ if [ -d $BRO_STATION  ]; then
 fi
 
 # Get home directory for projects
-read -p "WORKSTATION? ($HOME/projects):" WORKSTATION
-if [ "$WORKSTATION" = "" ]; then
-	WORKSTATION="$HOME/projects"
+read -p "BRO_PROJECTS_DIR? ($HOME/projects):" BRO_PROJECTS_DIR
+if [ "$BRO_PROJECTS_DIR" = "" ]; then
+	BRO_PROJECTS_DIR="$HOME/projects"
 fi
-mkdir -p `bro_expand $WORKSTATION`
+mkdir -p `bro_expand $BRO_PROJECTS_DIR`
 
 # Clone bro to home directory
 git clone  $bro_repo $BRO_STATION || {
@@ -41,5 +41,5 @@ git clone  $bro_repo $BRO_STATION || {
 # Register 'bro' config files at .bashrc
 echo "\n### Bro" >> ~/.bashrc
 echo "export BRO_STATION=$BRO_STATION" >> ~/.bashrc
-echo "export WORKSTATION=$WORKSTATION" >> ~/.bashrc
+echo "export BRO_PROJECTS_DIR=$BRO_PROJECTS_DIR" >> ~/.bashrc
 echo "source $BRO_STATION/activate" >> ~/.bashrc
