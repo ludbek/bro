@@ -1,5 +1,5 @@
 #!/bin/sh
-# 3.2.5
+# 3.3.0
 
 bro_expand () {
 	echo `sh -c "echo $1"`
@@ -178,6 +178,13 @@ bro_task () {
 	project_reference=`bro_expand "$BRO_STATION/projects/$possible_project"`
 
 	if [[ $# == 1 ]] && [[ -f "$project_reference" ]]; then
+		# if tmux session exists attach to it
+		if [[ $(tmux ls | sed -n "/$possible_project:/p") ]]
+		then
+			tmux a -t $possible_project
+			return 0
+		fi
+
 		bro_remote_task $possible_project default
 	elif [[ $# == 1 ]] && [[ ! -e ".brotasks" ]]; then
 		bro_usage
