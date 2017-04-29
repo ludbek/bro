@@ -1,5 +1,5 @@
 #!/bin/sh
-# 3.4.0
+# 3.4.1
 
 bro_expand () {
 	echo `sh -c "echo $1"`
@@ -284,14 +284,20 @@ bro_create () {
 			## copy files from template to project directory
 			cp -a $template_path/. $project_path/
 
-			if [ ! -f $project_path/.brotasks ] ; then
-				chmod +x $project_path/.brotasks/*
-			else
-				chmod +x $project_path/.brotasks
-			fi
 			;;
 	esac
 
+  # if no .brotasks file exists create one
+  if [[ ! -f $project_path/.brotasks ]] && [[ ! -d $project_path/.brotasks ]]; then
+    cp $BRO_STATION/templates/default/.brotasks $project_path/
+  fi
+
+  # make task files executible
+  if [ ! -f $project_path/.brotasks ] ; then
+    chmod +x $project_path/.brotasks/*
+  else
+    chmod +x $project_path/.brotasks
+  fi
 
 	## create project reference file
 	touch $project_reference
@@ -303,7 +309,7 @@ bro_create () {
 
 # remove a project
 bro_remove () {
-	if [ "$1" == "" ] ; then
+	if [[ "$1" == "" ]] ; then
 		bro_remove_usage
 		return 1
 	fi
@@ -387,7 +393,7 @@ bro_addtasks () {
 		cp $BRO_STATION/templates/default/.brotasks .brotasks/$1
 		chmod +x .brotasks/$1
 	else
-		echo "Please execute this command inside bro compatible project.."
+		echo "Please execute this command inside bro compatible project."
 	fi
 }
 
