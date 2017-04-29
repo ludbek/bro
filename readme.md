@@ -10,11 +10,24 @@ A companion for managing projects.
 ## Installtion
 Issue following commands for installation.
 
-```shell
+### 1. Download and install bro
 
+```shell
 $ curl -o  /tmp/bro https://raw.githubusercontent.com/ludbek/bro/master/install && sh /tmp/bro
-  BRO_STATION? ($HOME/.bro):         # directory where Bro will be installed
-  WORKSTATION? ($HOME/projects):     # directory where Bro will store projects
+```
+### 2. Set the directory where bro will reside
+
+```shell
+BRO_STATION? ($HOME/.bro):     
+```
+### 3. Set the directory where bro will store the projects
+
+```shell
+WORKSTATION? ($HOME/projects):
+```
+### 4. Activate bro
+
+```shell
 $ source ~/.bashrc
 ```
 
