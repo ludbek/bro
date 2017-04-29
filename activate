@@ -1,5 +1,5 @@
 #!/bin/sh
-# 3.3.0
+# 3.4.0
 
 bro_expand () {
 	echo `sh -c "echo $1"`
@@ -391,6 +391,11 @@ bro_addtasks () {
 	fi
 }
 
+bro_quit () {
+  project=$(basename "`pwd`")
+  tmux kill-session -t $project
+}
+
 bro () {
 	if [ "$#" == "0" ] ; then
 		bro_usage
@@ -420,6 +425,9 @@ bro () {
 			shift
 			bro_addtasks $@
 			;;
+    exit)
+      bro_quit
+      ;;
 		*)
 			bro_task $@
 			;;
@@ -431,10 +439,10 @@ bro_autocomplete_tasks () {
 
 	if [ -f $1 ]; then
 		local_commands="$(sed -n 's_\s*\(\w\))_\1_p' $1)"
-		COMPREPLY=( $(compgen -W '$local_commands create remove list takeover addtasks $projects' -- $cur) )
+		COMPREPLY=( $(compgen -W '$local_commands create remove list takeover addtasks exit $projects' -- $cur) )
 	else
 		local_commands="$(find $1 -type f -print0 | xargs -0 sed -n 's_\s*\(\w\))_\1_p')"
-		COMPREPLY=( $(compgen -W '$local_commands create remove list takeover addtasks $projects' -- $cur) )
+		COMPREPLY=( $(compgen -W '$local_commands create remove list takeover addtasks exit $projects' -- $cur) )
 	fi
 }
 

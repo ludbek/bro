@@ -31,7 +31,7 @@ $ bro create aproject
 ### -t (optional)
 Template is a generic project structure which can be used to create multiple projects.
 It could be a local directory or a remote git repository.
-A template can have a shell script named `.brotasks` or a directory named `.brotasks` which houses other 
+A template can have a shell script named `.brotasks` or a directory named `.brotasks` which houses other
 shell scripts. Create command executes the `setup` task in `.brotasks` (More on this later).
 
 ```shell
@@ -103,6 +103,9 @@ $ bro takeover ~/path/to/awesome-project awesome-project
 To takeover projects in remote repo, use `create` command.
 
 `$ bro create -t git@github.com:auser/awesome-project.git awesome-project`
+
+## Exit from a project
+One can quit current tmux session with `bro exit` command.
 
 
 ## Tasks
@@ -312,7 +315,7 @@ case $2 in
 		;;
 	env)
 		source .env/bin/activate
-		nvm use v5.6.0	
+		nvm use v5.6.0
 		;;
 esac
 ```
