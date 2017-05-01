@@ -14,7 +14,7 @@ command -v git > /dev/null || {
 
 
 # Abort if 'bro' is already installed
-if [ -d $BRO_STATION  ]; then
+if command -v bro > /dev/null && [ -d $BRO_STATION  ]; then
 	echo "'bro' is already installed at '$BRO_STATION'. Please use 'git' to update it.";
 	exit 1;
 fi
@@ -33,6 +33,12 @@ if [ "$WORKSTATION" = "" ]; then
 fi
 mkdir -p `bro_expand $WORKSTATION`
 
+# remove borken installation
+if [ -d $BRO_STATION ] ; then
+	echo "\nRemoving broken installation at $BRO_STATION"
+	rm -rf $BRO_STATION
+fi
+
 # Clone bro to home directory
 git clone  $bro_repo $BRO_STATION || {
 	echo "Could not install 'bro'. Please report the issue at 'https://github.com/ludbek/bro/issues'."
@@ -45,3 +51,5 @@ echo "\n### Bro" >> ~/.bashrc
 echo "export BRO_STATION=$BRO_STATION" >> ~/.bashrc
 echo "export WORKSTATION=$WORKSTATION" >> ~/.bashrc
 echo "source $BRO_STATION/activate" >> ~/.bashrc
+
+echo "\nPlease source ~/.bashrc ."
