@@ -1,6 +1,6 @@
 #!/bin/sh
 
-bro_repo=https://github.com/ludbek/bro.git
+bro_repo=https://github.com/acpmasquerade/bro.git
 
 bro_expand () {
 	echo `sh -c "echo $1"`
@@ -12,6 +12,11 @@ command -v git > /dev/null || {
 	exit 2;
 }
 
+# Get location where bro will be installed
+read -p "BRO_STATION? ($HOME/.bro):" BRO_STATION
+if [ "$BRO_STATION" = ""  ]; then
+	BRO_STATION="$HOME/.bro"
+fi
 
 # Abort if 'bro' is already installed
 if command -v bro > /dev/null && [ -d $BRO_STATION  ]; then
@@ -19,19 +24,12 @@ if command -v bro > /dev/null && [ -d $BRO_STATION  ]; then
 	exit 1;
 fi
 
-
-# Get location where bro will be installed
-read -p "BRO_STATION? ($HOME/.bro):" BRO_STATION
-if [ "$BRO_STATION" = ""  ]; then
-	BRO_STATION="$HOME/.bro"
-fi
-
 # Get home directory for projects
-read -p "WORKSTATION? ($HOME/projects):" WORKSTATION
-if [ "$WORKSTATION" = "" ]; then
-	WORKSTATION="$HOME/projects"
+read -p "BRO_PROJECTS_DIR? ($HOME/bro_projects):" BRO_PROJECTS_DIR
+if [ "$BRO_PROJECTS_DIR" = "" ]; then
+	BRO_PROJECTS_DIR="$HOME/bro_projects"
 fi
-mkdir -p `bro_expand $WORKSTATION`
+mkdir -p `bro_expand $BRO_PROJECTS_DIR`
 
 # remove borken installation
 if [ -d $BRO_STATION ] ; then
@@ -41,7 +39,7 @@ fi
 
 # Clone bro to home directory
 git clone  $bro_repo $BRO_STATION || {
-	echo "Could not install 'bro'. Please report the issue at 'https://github.com/ludbek/bro/issues'."
+	echo "Could not install 'bro'. Please report the issue at 'https://github.com/acpmasquerade/bro/issues'."
 	exit 2
 }
 
@@ -49,7 +47,7 @@ git clone  $bro_repo $BRO_STATION || {
 # Register 'bro' config files at .bashrc
 echo "\n### Bro" >> ~/.bashrc
 echo "export BRO_STATION=$BRO_STATION" >> ~/.bashrc
-echo "export WORKSTATION=$WORKSTATION" >> ~/.bashrc
+echo "export BRO_PROJECTS_DIR=$BRO_PROJECTS_DIR" >> ~/.bashrc
 echo "source $BRO_STATION/activate" >> ~/.bashrc
 
 echo "\nPlease source ~/.bashrc ."
