@@ -70,7 +70,7 @@ bro_setup () {
 	project_path=`bro_expand $(sed '1p' $project_reference)`
 	cd $project_path
 
-	bro_route_task $project setup
+	bro_task $project setup
 }
 
 
@@ -372,7 +372,7 @@ bro_takeover () {
 	echo $project_path > $project_reference
 
 	cd $project_path
-	bro_route_task $project_name default
+	bro_task $project_name default
 }
 
 
