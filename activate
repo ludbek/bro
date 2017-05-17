@@ -1,5 +1,5 @@
 #!/bin/sh
-# 3.4.3
+# 3.5.0
 
 bro_expand () {
 	echo `sh -c "echo $1"`
@@ -461,6 +461,7 @@ _bro () {
 
 	projects=$(ls $BRO_STATION/projects)
 
+	# $ bro
 	if (( $COMP_CWORD <= 1 )); then
 		# auto complete local tasks
 		if [ -e "./.brotasks" ]; then
@@ -494,6 +495,7 @@ _bro () {
 		return 0
 	fi
 
+	# bro <project>
 	# remote command completion
 	if (( $COMP_CWORD == 2 )); then
 		project_reference=`bro_expand "$BRO_STATION/projects/$prev"`
@@ -502,6 +504,13 @@ _bro () {
 			tasks_path=$project_path/.brotasks
 			bro_autocomplete_tasks $tasks_path
 		fi
+	fi
+
+
+	# auto complete beyound task
+	# bro [project] <task>
+	if (( $COMP_CWORD >= 2 )); then
+		COMPREPLY=( $(compgen -f -- $cur) )
 	fi
 }
 
