@@ -444,10 +444,10 @@ bro_autocomplete_tasks () {
 	projects=$(ls $BRO_STATION/projects)
 
 	if [ -f $1 ]; then
-		local_commands="$(sed -n 's_\s*\(\w\))_\1_p' $1)"
+		local_commands="$(sed -n 's_\s*\(\w\))\s*$_\1_p' $1)"
 		COMPREPLY=( $(compgen -W '$local_commands create remove list takeover addtasks exit $projects' -- $cur) )
 	else
-		local_commands="$(find $1 -type f -print0 | xargs -0 sed -n 's_\s*\(\w\))_\1_p')"
+		local_commands="$(find $1 -type f -print0 | xargs -0 sed -n 's_\s*\(\w\))\s*$_\1_p')"
 		COMPREPLY=( $(compgen -W '$local_commands create remove list takeover addtasks exit $projects' -- $cur) )
 	fi
 }
