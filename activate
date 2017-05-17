@@ -21,7 +21,7 @@ bro_usage () {
 	echo "------------------------------------------------"
 	echo "Task execution: bro [project] <task> [params]"
 	echo "  project    Project name. (Not required inside project directory.)"
-	echo "  task       Task at .brotasks."
+	echo "  task       Task at .brotasks directory."
 	echo "  params     Parameters for the task."
 }
 
@@ -29,7 +29,7 @@ bro_usage () {
 bro_task_usage () {
 	echo "Usage: bro [project] <task> [params]"
 	echo "  project    Project name. (Not required inside project directory.)"
-	echo "  task       Task at .brotasks."
+	echo "  task       Task at .brotasks directory."
 	echo "  params     Parameters for the task."
 }
 
@@ -111,10 +111,6 @@ bro_route_task () {
 				source $filename $@
 			fi
 		done
-	else
-		if [ -f .brotasks ] ; then
-			source ./.brotasks $@
-		fi
 	fi
 }
 
@@ -287,17 +283,12 @@ bro_create () {
 			;;
 	esac
 
-  # if no .brotasks file exists create one
-  if [[ ! -f $project_path/.brotasks ]] && [[ ! -d $project_path/.brotasks ]]; then
-    cp $BRO_STATION/templates/default/.brotasks $project_path/
+  # if no .brotasks directory exists create one
+  if [[ ! -d $project_path/.brotasks ]]; then
+    cp -r $BRO_STATION/templates/default/.brotasks $project_path/
   fi
 
-  # make task files executible
-  if [ ! -f $project_path/.brotasks ] ; then
-    chmod +x $project_path/.brotasks/*
-  else
-    chmod +x $project_path/.brotasks
-  fi
+	chmod +x $project_path/.brotasks/*
 
 	## create project reference file
 	touch $project_reference
@@ -382,15 +373,8 @@ bro_addtasks () {
 		echo "Please include name of the task file."
 	fi
 
-	# if .brotasks is a file move it inside .brotask directory
-	if [ -f ".brotasks" ] ; then
-		mv .brotasks .brotasksx
-		mkdir .brotasks
-		mv .brotasksx .brotasks/common
-	fi
-
 	if [ -d ".brotasks" ] ; then
-		cp $BRO_STATION/templates/default/.brotasks .brotasks/$1
+		cp $BRO_STATION/templates/default/.brotasks/default .brotasks/$1
 		chmod +x .brotasks/$1
 	else
 		echo "Please execute this command inside bro compatible project."
@@ -443,13 +427,8 @@ bro () {
 bro_autocomplete_tasks () {
 	projects=$(ls $BRO_STATION/projects)
 
-	if [ -f $1 ]; then
-		local_commands="$(sed -n 's_\s*\(\w\))\s*$_\1_p' $1)"
-		COMPREPLY=( $(compgen -W '$local_commands create remove list takeover addtasks exit $projects' -- $cur) )
-	else
-		local_commands="$(find $1 -type f -print0 | xargs -0 sed -n 's_\s*\(\w\))\s*$_\1_p')"
-		COMPREPLY=( $(compgen -W '$local_commands create remove list takeover addtasks exit $projects' -- $cur) )
-	fi
+	local_commands="$(find $1 -type f -print0 | xargs -0 sed -n 's_\s*\(\w\))\s*$_\1_p')"
+	COMPREPLY=( $(compgen -W '$local_commands create remove list takeover addtasks exit $projects' -- $cur) )
 }
 
 # autocomplete
