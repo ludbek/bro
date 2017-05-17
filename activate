@@ -362,6 +362,11 @@ bro_takeover () {
 	touch $project_reference
 	echo $project_path > $project_reference
 
+  # if no .brotasks directory exists create one
+  if [[ ! -d $project_path/.brotasks ]]; then
+    cp -r $BRO_STATION/templates/default/.brotasks $project_path/
+  fi
+
 	cd $project_path
 	bro_task $project_name default
 }
