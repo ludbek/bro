@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # 3.5.0
 
 bro_expand () {
@@ -95,23 +95,21 @@ bro_remote_task () {
 	project_path=`bro_expand $(sed '1p' $project_reference)`
 	cd $project_path
 
+	shift
 	bro_route_task $@
 }
 
 bro_local_task () {
-	project=$(basename "`pwd`")
-
-	bro_route_task $project $@
+	#project=$(basename "`pwd`")
+	bro_route_task $@
 }
 
 bro_route_task () {
-	if [ -d .brotasks ] ; then
-		for filename in ./.brotasks/* ; do
-			if [ -f $filename ] ; then
-				source $filename $@
-			fi
-		done
-	fi
+	for file in ./.brotasks/* ; do
+		filename=$(basename "$file")
+		lang="${filename##*.}"
+		$BRO_STATION/langs/$lang execute_task $file $@
+	done
 }
 
 # execute command at .brofile
@@ -432,8 +430,16 @@ bro () {
 bro_autocomplete_tasks () {
 	projects=$(ls $BRO_STATION/projects)
 
-	local_commands="$(find $1 -type f -print0 | xargs -0 sed -n 's_\s*\(\w\))\s*$_\1_p')"
-	COMPREPLY=( $(compgen -W '$local_commands create remove list takeover addtasks exit $projects' -- $cur) )
+	total_tasks=""
+
+	for file in $1/*; do
+		filename=$(basename "$file")
+		lang="${filename##*.}"
+		tasks_in_file=$($BRO_STATION/langs/$lang get_tasks $file)
+		total_tasks="$total_tasks $tasks_in_file"
+	done
+
+	COMPREPLY=( $(compgen -W '$total_tasks create remove list takeover addtasks exit $projects' -- $cur) )
 }
 
 # autocomplete
