@@ -1,0 +1,25 @@
+#!/bin/bash
+
+get_tasks() {
+	file=$1
+	tasks="$(sed -n  's/def\s*\([a-zA-Z]*\)\s*(.*)\s*:\s*$/\1/p' $file)"
+	echo "$tasks"
+}
+
+execute_task() {
+	file=$1
+	task=$2
+
+	pattern="s/def\s*\($task\)\s*(.*)\s*:\s*$/\1/p" 
+	match="$(sed -n $pattern $file)" 
+	if [ $task == "$match" ] ; then
+		shift
+		shift
+		params="$(echo $@ | sed -r 's/[a-z]+/"&"/g')"
+		params="$(echo $params | sed -e 's/ /,/g')"
+
+		python -c "execfile('$file'); $task($params)"
+	fi
+}
+
+$@
