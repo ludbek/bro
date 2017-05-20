@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 get_tasks() {
 	file=$1
@@ -12,7 +12,7 @@ execute_task() {
 
 	pattern="s/\s*\($task\)\s*(\s*)\s*{\s*$/\1/p" 
 	match="$(sed -n $pattern $file)" 
-	if [ $task == "$match" ] ; then
+	if [ $task = "$match" ] ; then
 		$@
 	fi
 }

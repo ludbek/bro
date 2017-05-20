@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # 3.5.0
 
 bro_expand () {
@@ -77,7 +77,7 @@ bro_setup () {
 bro_remote_task () {
 	# check for proper number of arguments
 	# must have at least two arguments
-	if [ "$#" == "1" ] ; then
+	if [ "$#" = "1" ] ; then
 		bro_task_usage
 		return 1
 	fi
@@ -154,10 +154,10 @@ bro_task () {
 	}
 
 	focus () {
-		if [[ $# == 2 ]]; then
+		if [[ $# = 2 ]]; then
 			tmux select-window -t $1
 			tmux select-pane -t $2
-		elif [[ $# == 1 ]]; then
+		elif [[ $# = 1 ]]; then
 			tmux select-window -t $1
 		fi
 	}
@@ -171,7 +171,7 @@ bro_task () {
 	possible_project=$1
 	project_reference=`bro_expand "$BRO_STATION/projects/$possible_project"`
 
-	if [[ $# == 1 ]] && [[ -f "$project_reference" ]]; then
+	if [[ $# = 1 ]] && [[ -f "$project_reference" ]]; then
 		# if tmux session exists attach to it
 		if [[ $(tmux ls 2>/dev/null | sed -n "/$possible_project:/p") ]]
 		then
@@ -180,7 +180,7 @@ bro_task () {
 		fi
 
 		bro_remote_task $possible_project default
-	elif [[ $# == 1 ]] && [[ ! -e ".brotasks" ]]; then
+	elif [[ $# = 1 ]] && [[ ! -e ".brotasks" ]]; then
 		bro_usage
 	elif [[ ! -e "$project_reference" ]] && [[ -e ".brotasks" ]]; then
 		bro_local_task $@
@@ -298,7 +298,7 @@ bro_create () {
 
 # remove a project
 bro_remove () {
-	if [[ "$1" == "" ]] ; then
+	if [[ "$1" = "" ]] ; then
 		bro_remove_usage
 		return 1
 	fi
@@ -337,7 +337,7 @@ bro_list () {
 
 # takeover existing projects
 bro_takeover () {
-	if [ ! $# == 2 ] ; then
+	if [ ! $# = 2 ] ; then
 		bro_takeover_usage
 		return
 	fi
@@ -372,7 +372,7 @@ bro_takeover () {
 
 # adds new task file to a bro project
 bro_addtasks () {
-	if [ ! $# == 1 ] ; then
+	if [ ! $# = 1 ] ; then
 		echo "Please include name of the task file."
 	fi
 
@@ -390,7 +390,7 @@ bro_quit () {
 }
 
 bro () {
-	if [ "$#" == "0" ] ; then
+	if [ "$#" = "0" ] ; then
 		bro_usage
 		return 1
 	fi
@@ -464,30 +464,30 @@ _bro () {
 	fi
 
 	# autocomplete options for create command
-	if [[ "$prev" == "create" ]]; then
+	if [[ "$prev" = "create" ]]; then
 		COMPREPLY=( $(compgen -W '-p -t' -- $cur) )
 		return 0
 	fi
 
 	# autocomplete project names for remove command
-	if [[ "$prev" == "remove" ]]; then
+	if [[ "$prev" = "remove" ]]; then
 		COMPREPLY=( $(compgen -W '$projects' -- $cur) )
 		return 0
 	fi
 
-	if [[ "$prev" == "takeover" ]]; then
+	if [[ "$prev" = "takeover" ]]; then
 		COMPREPLY=( $(compgen -f -- $cur) )
 		return 0
 	fi
 
 	# no auto completion for list command
-	if [[ "$prev" == "list" ]]; then
+	if [[ "$prev" = "list" ]]; then
 		return 0
 	fi
 
 	# bro <project>
 	# remote command completion
-	if (( $COMP_CWORD == 2 )); then
+	if (( $COMP_CWORD = 2 )); then
 		project_reference=`bro_expand "$BRO_STATION/projects/$prev"`
 		if [ -e "$project_reference" ]; then
 			project_path=`bro_expand $(sed '1p' $project_reference)`
