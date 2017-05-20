@@ -108,7 +108,7 @@ bro_route_task () {
 	for file in ./.brotasks/* ; do
 		filename=$(basename "$file")
 		lang="${filename##*.}"
-		$BRO_STATION/langs/$lang execute_task $file $@
+		. $BRO_STATION/langs/$lang execute_task $file $@
 	done
 }
 
