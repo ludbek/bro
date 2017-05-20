@@ -1,0 +1,26 @@
+#!/bin/sh
+
+get_tasks() {
+	echo "@ get tasks"
+	file=$1
+	tasks="$(sed -n  's/def\s*\([a-zA-Z][a-zA-Z0-9_]*\)\s*(.*)\s*$/\1/p' $file)"
+	echo "$tasks"
+}
+
+execute_task() {
+	file=$1
+	task=$2
+
+	pattern="s/def\s*\($task\)\s*(.*)\s*$/\1/p" 
+	match="$(sed -n $pattern $file)" 
+	if [ $task = "$match" ] ; then
+		shift
+		shift
+		params="$(echo $@ | sed -r 's/[a-z]+/"&"/g')"
+		params="$(echo $params | sed -e 's/ /,/g')"
+
+		ruby -r "$file" -e "$task($params)"
+	fi
+}
+
+$@
