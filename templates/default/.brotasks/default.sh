@@ -5,3 +5,5 @@ project=$(basename `pwd`)
 default () {
   echo "Happy hacking !!!"
 }
+
+$@

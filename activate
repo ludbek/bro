@@ -54,6 +54,10 @@ bro_takeover_usage () {
 	echo "  project   Name of the project."
 }
 
+bro_copy_default_template () {
+	
+}
+
 
 # setup a project
 # like installing dependencies, git, preparing project structure etc
