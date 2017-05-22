@@ -377,7 +377,7 @@ bro_addtasks () {
 	fi
 
 	if [ -d ".brotasks" ] ; then
-		cp $BRO_STATION/templates/default/.brotasks/default .brotasks/$1
+		cp $BRO_STATION/templates/default/.brotasks/default.sh .brotasks/$1
 		chmod +x .brotasks/$1
 	else
 		echo "Please execute this command inside bro compatible project."
@@ -487,7 +487,7 @@ _bro () {
 
 	# bro <project>
 	# remote command completion
-	if (( $COMP_CWORD = 2 )); then
+	if [[ $COMP_CWORD = 2 ]]; then
 		project_reference=`bro_expand "$BRO_STATION/projects/$prev"`
 		if [ -e "$project_reference" ]; then
 			project_path=`bro_expand $(sed '1p' $project_reference)`
@@ -499,7 +499,7 @@ _bro () {
 
 	# auto complete beyound task
 	# bro [project] <task>
-	if (( $COMP_CWORD >= 2 )); then
+	if [[ $COMP_CWORD -ge 2 ]]; then
 		COMPREPLY=( $(compgen -f -- $cur) )
 	fi
 }
