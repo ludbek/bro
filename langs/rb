@@ -1,5 +1,19 @@
 #!/bin/sh
 
+create_tasks_file() {
+	if [ ! $1  ]; then
+		echo "Please pass file name."
+		return 0
+	fi
+
+	cat > .brotasks/$1.rb << 'EOF'
+def default ()
+	puts("Happy hacking")
+end
+EOF
+
+}
+
 get_tasks() {
 	echo "@ get tasks"
 	file=$1
