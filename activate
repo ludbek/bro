@@ -54,6 +54,17 @@ bro_takeover_usage () {
 	echo "  project   Name of the project."
 }
 
+bro_create_brotasks_directory () {
+	project_path=$1
+	# if no .brotasks directory exists create one
+	if [ ! -d $project_path/.brotasks ]; then
+		mkdir -p $project_path/.brotasks
+		. $BRO_STATION/langs/sh create_tasks_file $project_path default.sh
+	fi
+
+	chmod +x $project_path/.brotasks/*
+}
+
 
 # setup a project
 # like installing dependencies, git, preparing project structure etc
@@ -71,6 +82,7 @@ bro_setup () {
 	cd $project_path
 
 	bro_task $project setup
+	bro init
 }
 
 
@@ -248,7 +260,7 @@ bro_create () {
 	## set template
 	case $template in
 		"")
-			template_path=`bro_expand "$BRO_STATION/templates/default"`
+			template_path=""
 			;;
 		# templates/name or name
 		git@*|http:*|https:*|/*|~*)
@@ -261,6 +273,10 @@ bro_create () {
 
 	## create project directory at specified path
 	case $template_path in
+		# no template specified
+		"")
+			bro_create_brotasks_directory $project_path
+			;;
 		# http or git
 		git@*|http:*|https:*)
 			git clone $template_path $project_path
@@ -285,12 +301,7 @@ bro_create () {
 			;;
 	esac
 
-  # if no .brotasks directory exists create one
-  if [[ ! -d $project_path/.brotasks ]]; then
-    cp -r $BRO_STATION/templates/default/.brotasks $project_path/
-  fi
-
-	chmod +x $project_path/.brotasks/*
+	bro_create_brotasks_directory $project_path
 
 	## create project reference file
 	touch $project_reference
@@ -364,10 +375,7 @@ bro_takeover () {
 	touch $project_reference
 	echo $project_path > $project_reference
 
-  # if no .brotasks directory exists create one
-  if [[ ! -d $project_path/.brotasks ]]; then
-    cp -r $BRO_STATION/templates/default/.brotasks $project_path/
-  fi
+	bro_create_brotasks_directory $project_path
 
 	cd $project_path
 	bro_task $project_name init
@@ -380,9 +388,10 @@ bro_addtasks () {
 		echo "Please include name of the task file."
 	fi
 
+	filename=$1
 	if [ -d ".brotasks" ] ; then
-		cp $BRO_STATION/templates/default/.brotasks/default.sh .brotasks/$1
-		chmod +x .brotasks/$1
+		lang="${filename##*.}"
+		. $BRO_STATION/langs/$lang create_tasks_file $filename
 	else
 		echo "Please execute this command inside bro compatible project."
 	fi

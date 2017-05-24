@@ -6,14 +6,17 @@ create_tasks_file() {
 		return 0
 	fi
 
-	cat > .brotasks/$1.java << EOF
-public class $1 {
-	public static void default () {
+	full_filename=$1
+	filename="${full_filename%.*}"
+	cat > .brotasks/$full_filename << EOF
+public class $filename {
+	public static void init () {
 		System.out.println("Happy hacking");
 	}	
 }  
 EOF
 
+	chmod +x .brotasks/$1
 }
 
 get_tasks() {

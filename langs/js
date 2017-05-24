@@ -6,14 +6,15 @@ create_tasks_file() {
 		return 0
 	fi
 
-	cat > .brotasks/$1.js << 'EOF'
+	cat > .brotasks/$1 << 'EOF'
 module.exports = {
-	default () {
+	init () {
 		console.log("Happy hacking");
 	}
 }
 EOF
 
+	chmod +x .brotasks/$1
 }
 
 get_tasks() {

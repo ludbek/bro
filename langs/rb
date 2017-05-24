@@ -6,12 +6,13 @@ create_tasks_file() {
 		return 0
 	fi
 
-	cat > .brotasks/$1.rb << 'EOF'
-def default ()
+	cat > .brotasks/$1 << 'EOF'
+def init ()
 	puts("Happy hacking")
 end
 EOF
 
+	chmod +x .brotasks/$1
 }
 
 get_tasks() {

@@ -6,10 +6,12 @@ create_tasks_file() {
 		return 0
 	fi
 
-	cat > .brotasks/$1.py << 'EOF'
-def default():
+	cat > .brotasks/$1 << 'EOF'
+def init():
 	print("Happy hacking")
 EOF
+
+	chmod +x .brotasks/$1
 
 }
 

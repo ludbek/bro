@@ -1,22 +1,34 @@
 #!/bin/sh
 
 create_tasks_file() {
-	if [ ! $1  ]; then
+	if (( $# < 1  )); then
 		echo "Please pass file name."
 		return 0
 	fi
 
-	cat > .brotasks/$1.sh << 'EOF'
+	local path
+
+	if (( $# == 1 )); then
+		path=.brotasks/$1
+	fi
+
+	if (( $# == 2 )); then
+		path=$1/.brotasks/$2
+	fi
+
+	cat > $path << 'EOF'
 #!/bin/sh
 
 project=$(basename `pwd`)
 
-default () {
+init () {
   echo "Happy hacking !!!"
 }
 
 $@
 EOF
+
+	chmod +x $path
 
 }
 
