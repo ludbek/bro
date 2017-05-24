@@ -1,0 +1,58 @@
+#!/bin/sh
+
+create_tasks_file() {
+	if [ ! $1  ]; then
+		echo "Please pass file name."
+		return 0
+	fi
+
+	full_filename=$1
+	filename="${full_filename%.*}"
+	cat > .brotasks/$full_filename << EOF
+public class $filename {
+	public static void init () {
+		System.out.println("Happy hacking");
+	}	
+}  
+EOF
+
+	chmod +x .brotasks/$1
+}
+
+get_tasks() {
+	file=$1
+	tasks="$(sed -n  's/^\s*public\s*static\s*void\s*\([a-zA-Z][a-zA-Z0-9_]*\)\s*(.*)\s*{\s*$/\1/p' $file)"
+	echo "$tasks"
+}
+
+execute_task() {
+	file=$1
+	task=$2
+	full_filename=$(basename "$file")
+	filename="${full_filename%.*}"
+
+	pattern="s/^\s*public\s*static\s*void\s*\($task\)\s*(.*)\s*{\s*$/\1/p" 
+	match="$(sed -n $pattern $file)" 
+	if [ $task != "$match" ] ; then
+		return 0
+	fi
+
+	shift
+	shift
+	params="$(echo $@ | sed -r 's/[a-z]+/"&"/g')"
+	params="$(echo $params | sed -e 's/ /,/g')"
+
+	cat > .brotasks/TaskRunner.java << EOF
+public class TaskRunner {
+	public static void main (String []args) {
+		$filename.$task($params);
+	}	
+}  
+EOF
+
+	cd .brotasks/ && javac TaskRunner.java && java TaskRunner && cd ..
+	find .brotasks/ -name '*.class' -delete
+	rm .brotasks/TaskRunner.java
+}
+
+$@

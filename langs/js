@@ -1,0 +1,42 @@
+#!/bin/sh
+
+create_tasks_file() {
+	if [ ! $1  ]; then
+		echo "Please pass file name."
+		return 0
+	fi
+
+	cat > .brotasks/$1 << 'EOF'
+module.exports = {
+	init () {
+		console.log("Happy hacking");
+	}
+}
+EOF
+
+	chmod +x .brotasks/$1
+}
+
+get_tasks() {
+	file=$1
+	tasks="$(sed -n  's/s*\([a-zA-Z][a-zA-Z0-9_]*\)\s*(.*)\s*{\s*$/\1/p' $file)"
+	echo "$tasks"
+}
+
+execute_task() {
+	file=$1
+	task=$2
+
+	pattern="s/\s*\($task\)\s*(.*)\s*{\s*$/\1/p" 
+	match="$(sed -n $pattern $file)" 
+	if [ $task = "$match" ] ; then
+		shift
+		shift
+		params="$(echo $@ | sed -r 's/[a-z]+/"&"/g')"
+		params="$(echo $params | sed -e 's/ /,/g')"
+
+		node -e "require('$file').$task($params)"
+	fi
+}
+
+$@

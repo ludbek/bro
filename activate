@@ -1,5 +1,5 @@
 #!/bin/sh
-# 3.4.3
+# 3.5.0
 
 bro_expand () {
 	echo `sh -c "echo $1"`
@@ -21,7 +21,7 @@ bro_usage () {
 	echo "------------------------------------------------"
 	echo "Task execution: bro [project] <task> [params]"
 	echo "  project    Project name. (Not required inside project directory.)"
-	echo "  task       Task at .brotasks."
+	echo "  task       Task at .brotasks directory."
 	echo "  params     Parameters for the task."
 }
 
@@ -29,7 +29,7 @@ bro_usage () {
 bro_task_usage () {
 	echo "Usage: bro [project] <task> [params]"
 	echo "  project    Project name. (Not required inside project directory.)"
-	echo "  task       Task at .brotasks."
+	echo "  task       Task at .brotasks directory."
 	echo "  params     Parameters for the task."
 }
 
@@ -54,6 +54,17 @@ bro_takeover_usage () {
 	echo "  project   Name of the project."
 }
 
+bro_create_brotasks_directory () {
+	project_path=$1
+	# if no .brotasks directory exists create one
+	if [ ! -d $project_path/.brotasks ]; then
+		mkdir -p $project_path/.brotasks
+		. $BRO_STATION/langs/sh create_tasks_file $project_path default.sh
+	fi
+
+	chmod +x $project_path/.brotasks/*
+}
+
 
 # setup a project
 # like installing dependencies, git, preparing project structure etc
@@ -71,13 +82,14 @@ bro_setup () {
 	cd $project_path
 
 	bro_task $project setup
+	bro init
 }
 
 
 bro_remote_task () {
 	# check for proper number of arguments
 	# must have at least two arguments
-	if [ "$#" == "1" ] ; then
+	if [ "$#" = "1" ] ; then
 		bro_task_usage
 		return 1
 	fi
@@ -95,27 +107,25 @@ bro_remote_task () {
 	project_path=`bro_expand $(sed '1p' $project_reference)`
 	cd $project_path
 
+	shift
 	bro_route_task $@
 }
 
 bro_local_task () {
-	project=$(basename "`pwd`")
-
-	bro_route_task $project $@
+	#project=$(basename "`pwd`")
+	bro_route_task $@
 }
 
 bro_route_task () {
-	if [ -d .brotasks ] ; then
-		for filename in ./.brotasks/* ; do
-			if [ -f $filename ] ; then
-				source $filename $@
-			fi
-		done
-	else
-		if [ -f .brotasks ] ; then
-			source ./.brotasks $@
+	for file in ./.brotasks/* ; do
+		filename=$(basename "$file")
+		lang="${filename##*.}"
+		lang_handler=$BRO_STATION/langs/$lang
+
+		if [ -f $lang_handler ]; then
+			. $BRO_STATION/langs/$lang execute_task $file $@
 		fi
-	fi
+	done
 }
 
 # execute command at .brofile
@@ -160,10 +170,10 @@ bro_task () {
 	}
 
 	focus () {
-		if [[ $# == 2 ]]; then
+		if [[ $# = 2 ]]; then
 			tmux select-window -t $1
 			tmux select-pane -t $2
-		elif [[ $# == 1 ]]; then
+		elif [[ $# = 1 ]]; then
 			tmux select-window -t $1
 		fi
 	}
@@ -177,7 +187,7 @@ bro_task () {
 	possible_project=$1
 	project_reference=`bro_expand "$BRO_STATION/projects/$possible_project"`
 
-	if [[ $# == 1 ]] && [[ -f "$project_reference" ]]; then
+	if [[ $# = 1 ]] && [[ -f "$project_reference" ]]; then
 		# if tmux session exists attach to it
 		if [[ $(tmux ls 2>/dev/null | sed -n "/$possible_project:/p") ]]
 		then
@@ -185,8 +195,8 @@ bro_task () {
 			return 0
 		fi
 
-		bro_remote_task $possible_project default
-	elif [[ $# == 1 ]] && [[ ! -e ".brotasks" ]]; then
+		bro_remote_task $possible_project init
+	elif [[ $# = 1 ]] && [[ ! -e ".brotasks" ]]; then
 		bro_usage
 	elif [[ ! -e "$project_reference" ]] && [[ -e ".brotasks" ]]; then
 		bro_local_task $@
@@ -250,7 +260,7 @@ bro_create () {
 	## set template
 	case $template in
 		"")
-			template_path=`bro_expand "$BRO_STATION/templates/default"`
+			template_path=""
 			;;
 		# templates/name or name
 		git@*|http:*|https:*|/*|~*)
@@ -263,6 +273,10 @@ bro_create () {
 
 	## create project directory at specified path
 	case $template_path in
+		# no template specified
+		"")
+			bro_create_brotasks_directory $project_path
+			;;
 		# http or git
 		git@*|http:*|https:*)
 			git clone $template_path $project_path
@@ -287,17 +301,7 @@ bro_create () {
 			;;
 	esac
 
-  # if no .brotasks file exists create one
-  if [[ ! -f $project_path/.brotasks ]] && [[ ! -d $project_path/.brotasks ]]; then
-    cp $BRO_STATION/templates/default/.brotasks $project_path/
-  fi
-
-  # make task files executible
-  if [ ! -f $project_path/.brotasks ] ; then
-    chmod +x $project_path/.brotasks/*
-  else
-    chmod +x $project_path/.brotasks
-  fi
+	bro_create_brotasks_directory $project_path
 
 	## create project reference file
 	touch $project_reference
@@ -309,7 +313,7 @@ bro_create () {
 
 # remove a project
 bro_remove () {
-	if [[ "$1" == "" ]] ; then
+	if [[ "$1" = "" ]] ; then
 		bro_remove_usage
 		return 1
 	fi
@@ -348,7 +352,7 @@ bro_list () {
 
 # takeover existing projects
 bro_takeover () {
-	if [ ! $# == 2 ] ; then
+	if [ ! $# = 2 ] ; then
 		bro_takeover_usage
 		return
 	fi
@@ -371,27 +375,23 @@ bro_takeover () {
 	touch $project_reference
 	echo $project_path > $project_reference
 
+	bro_create_brotasks_directory $project_path
+
 	cd $project_path
-	bro_task $project_name default
+	bro_task $project_name init
 }
 
 
 # adds new task file to a bro project
 bro_addtasks () {
-	if [ ! $# == 1 ] ; then
+	if [ ! $# = 1 ] ; then
 		echo "Please include name of the task file."
 	fi
 
-	# if .brotasks is a file move it inside .brotask directory
-	if [ -f ".brotasks" ] ; then
-		mv .brotasks .brotasksx
-		mkdir .brotasks
-		mv .brotasksx .brotasks/common
-	fi
-
+	filename=$1
 	if [ -d ".brotasks" ] ; then
-		cp $BRO_STATION/templates/default/.brotasks .brotasks/$1
-		chmod +x .brotasks/$1
+		lang="${filename##*.}"
+		. $BRO_STATION/langs/$lang create_tasks_file $filename
 	else
 		echo "Please execute this command inside bro compatible project."
 	fi
@@ -403,7 +403,7 @@ bro_quit () {
 }
 
 bro () {
-	if [ "$#" == "0" ] ; then
+	if [ "$#" = "0" ] ; then
 		bro_usage
 		return 1
 	fi
@@ -443,13 +443,20 @@ bro () {
 bro_autocomplete_tasks () {
 	projects=$(ls $BRO_STATION/projects)
 
-	if [ -f $1 ]; then
-		local_commands="$(sed -n 's_\s*\(\w\))_\1_p' $1)"
-		COMPREPLY=( $(compgen -W '$local_commands create remove list takeover addtasks exit $projects' -- $cur) )
-	else
-		local_commands="$(find $1 -type f -print0 | xargs -0 sed -n 's_\s*\(\w\))_\1_p')"
-		COMPREPLY=( $(compgen -W '$local_commands create remove list takeover addtasks exit $projects' -- $cur) )
-	fi
+	total_tasks=""
+
+	for file in $1/*; do
+		filename=$(basename "$file")
+		lang="${filename##*.}"
+		lang_handler="$BRO_STATION/langs/$lang"
+
+		if [ -f $lang_handler ]; then
+			tasks_in_file=$($lang_handler get_tasks $file)
+			total_tasks="$total_tasks $tasks_in_file"
+		fi
+	done
+
+	COMPREPLY=( $(compgen -W '$total_tasks create remove list takeover addtasks exit $projects' -- $cur) )
 }
 
 # autocomplete
@@ -461,6 +468,7 @@ _bro () {
 
 	projects=$(ls $BRO_STATION/projects)
 
+	# $ bro
 	if (( $COMP_CWORD <= 1 )); then
 		# auto complete local tasks
 		if [ -e "./.brotasks" ]; then
@@ -473,35 +481,43 @@ _bro () {
 	fi
 
 	# autocomplete options for create command
-	if [[ "$prev" == "create" ]]; then
+	if [[ "$prev" = "create" ]]; then
 		COMPREPLY=( $(compgen -W '-p -t' -- $cur) )
 		return 0
 	fi
 
 	# autocomplete project names for remove command
-	if [[ "$prev" == "remove" ]]; then
+	if [[ "$prev" = "remove" ]]; then
 		COMPREPLY=( $(compgen -W '$projects' -- $cur) )
 		return 0
 	fi
 
-	if [[ "$prev" == "takeover" ]]; then
+	if [[ "$prev" = "takeover" ]]; then
 		COMPREPLY=( $(compgen -f -- $cur) )
 		return 0
 	fi
 
 	# no auto completion for list command
-	if [[ "$prev" == "list" ]]; then
+	if [[ "$prev" = "list" ]]; then
 		return 0
 	fi
 
+	# bro <project>
 	# remote command completion
-	if (( $COMP_CWORD == 2 )); then
+	if [[ $COMP_CWORD = 2 ]]; then
 		project_reference=`bro_expand "$BRO_STATION/projects/$prev"`
 		if [ -e "$project_reference" ]; then
 			project_path=`bro_expand $(sed '1p' $project_reference)`
 			tasks_path=$project_path/.brotasks
 			bro_autocomplete_tasks $tasks_path
 		fi
+	fi
+
+
+	# auto complete beyound task
+	# bro [project] <task>
+	if [[ $COMP_CWORD -ge 2 ]]; then
+		COMPREPLY=( $(compgen -f -- $cur) )
 	fi
 }
 
