@@ -48,8 +48,8 @@ public class TaskRunner {
 EOF
 
 	cd .brotasks/ && javac TaskRunner.java && java TaskRunner && cd ..
-	#rm .brotasks/*.class
-	#rm .brotasks/TaskRunner.java
+	find .brotasks/ -name '*.class' -delete
+	rm .brotasks/TaskRunner.java
 }
 
 $@

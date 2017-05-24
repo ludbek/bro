@@ -54,10 +54,6 @@ bro_takeover_usage () {
 	echo "  project   Name of the project."
 }
 
-bro_copy_default_template () {
-	
-}
-
 
 # setup a project
 # like installing dependencies, git, preparing project structure etc
@@ -112,7 +108,11 @@ bro_route_task () {
 	for file in ./.brotasks/* ; do
 		filename=$(basename "$file")
 		lang="${filename##*.}"
-		. $BRO_STATION/langs/$lang execute_task $file $@
+		lang_handler=$BRO_STATION/langs/$lang
+
+		if [ -f $lang_handler ]; then
+			. $BRO_STATION/langs/$lang execute_task $file $@
+		fi
 	done
 }
 
@@ -183,7 +183,7 @@ bro_task () {
 			return 0
 		fi
 
-		bro_remote_task $possible_project default
+		bro_remote_task $possible_project init
 	elif [[ $# = 1 ]] && [[ ! -e ".brotasks" ]]; then
 		bro_usage
 	elif [[ ! -e "$project_reference" ]] && [[ -e ".brotasks" ]]; then
@@ -370,7 +370,7 @@ bro_takeover () {
   fi
 
 	cd $project_path
-	bro_task $project_name default
+	bro_task $project_name init
 }
 
 
@@ -439,8 +439,12 @@ bro_autocomplete_tasks () {
 	for file in $1/*; do
 		filename=$(basename "$file")
 		lang="${filename##*.}"
-		tasks_in_file=$($BRO_STATION/langs/$lang get_tasks $file)
-		total_tasks="$total_tasks $tasks_in_file"
+		lang_handler="$BRO_STATION/langs/$lang"
+
+		if [ -f $lang_handler ]; then
+			tasks_in_file=$($lang_handler get_tasks $file)
+			total_tasks="$total_tasks $tasks_in_file"
+		fi
 	done
 
 	COMPREPLY=( $(compgen -W '$total_tasks create remove list takeover addtasks exit $projects' -- $cur) )
