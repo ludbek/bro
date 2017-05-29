@@ -1,6 +1,15 @@
 #!/bin/sh
 # 3.5.0
 
+bro_sed () {
+	if command -v gsed > /dev/null ; then
+		gsed $@
+		return 0
+	fi
+
+	sed $@
+}
+
 bro_expand () {
 	echo `sh -c "echo $1"`
 }
@@ -78,7 +87,7 @@ bro_setup () {
 		return 1
 	fi
 
-	project_path=`bro_expand $(sed '1p' $project_reference)`
+	project_path=`bro_expand $(bro_sed '1p' $project_reference)`
 	cd $project_path
 
 	bro_task $project setup
@@ -104,7 +113,7 @@ bro_remote_task () {
 		return 1
 	fi
 
-	project_path=`bro_expand $(sed '1p' $project_reference)`
+	project_path=`bro_expand $(bro_sed '1p' $project_reference)`
 	cd $project_path
 
 	shift
@@ -189,7 +198,7 @@ bro_task () {
 
 	if [[ $# = 1 ]] && [[ -f "$project_reference" ]]; then
 		# if tmux session exists attach to it
-		if [[ $(tmux ls 2>/dev/null | sed -n "/$possible_project:/p") ]]
+		if [[ $(tmux ls 2>/dev/null | bro_sed -n "/$possible_project:/p") ]]
 		then
 			tmux a -t $possible_project
 			return 0
@@ -241,7 +250,7 @@ bro_create () {
 	if [ "$path" = "" ] ; then
 		project_path=`bro_expand "$WORKSTATION/$project"`
 	else
-		if [ "$(echo $path | sed -n "/[~\/]/p")" = "" ] ; then
+		if [ "$(echo $path | bro_sed -n "/[~\/]/p")" = "" ] ; then
 			mkdir -p `bro_expand "$WORKSTATION/$path"`
 			project_path=`bro_expand "$WORKSTATION/$path/$project"`
 		else
@@ -451,7 +460,7 @@ bro_autocomplete_tasks () {
 		lang_handler="$BRO_STATION/langs/$lang"
 
 		if [ -f $lang_handler ]; then
-			tasks_in_file=$($lang_handler get_tasks $file)
+			tasks_in_file=$(. $lang_handler get_tasks $file)
 			total_tasks="$total_tasks $tasks_in_file"
 		fi
 	done
@@ -507,7 +516,7 @@ _bro () {
 	if [[ $COMP_CWORD = 2 ]]; then
 		project_reference=`bro_expand "$BRO_STATION/projects/$prev"`
 		if [ -e "$project_reference" ]; then
-			project_path=`bro_expand $(sed '1p' $project_reference)`
+			project_path=`bro_expand $(bro_sed '1p' $project_reference)`
 			tasks_path=$project_path/.brotasks
 			bro_autocomplete_tasks $tasks_path
 		fi
