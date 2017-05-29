@@ -21,7 +21,7 @@ EOF
 
 get_tasks() {
 	file=$1
-	tasks="$(bro_sed -n  's/^\s*public\s*static\s*void\s*\([a-zA-Z][a-zA-Z0-9_]*\)\s*(.*)\s*{\s*$/\1/p' $file)"
+	tasks="$(bro_sed -nr  's/^\s*public\s*static\s*void\s*([a-zA-Z][a-zA-Z0-9_]*)\s*\(.*\)\s*\{\s*$/\1/p' $file)"
 	echo "$tasks"
 }
 
@@ -31,8 +31,8 @@ execute_task() {
 	full_filename=$(basename "$file")
 	filename="${full_filename%.*}"
 
-	pattern="s/^\s*public\s*static\s*void\s*\($task\)\s*(.*)\s*{\s*$/\1/p" 
-	match="$(bro_sed -n $pattern $file)" 
+	pattern="s/^\s*public\s*static\s*void\s*($task)\s*\(.*\)\s*\{\s*$/\1/p" 
+	match="$(bro_sed -nr $pattern $file)" 
 	if [ $task != "$match" ] ; then
 		return 0
 	fi
