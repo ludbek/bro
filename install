@@ -53,6 +53,8 @@ if [ -d $backup_directory ]; then
 	mv $backup_directory $BRO_STATION/projects
 fi
 
+mkdir -p $BRO_STATION/projects
+
 
 # Register 'bro' config files at .bashrc
 echo "\n### Bro" >> ~/.bashrc
