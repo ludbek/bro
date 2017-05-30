@@ -1,6 +1,8 @@
 #!/bin/sh
 # 3.5.0
 
+BRO_COMMANDS="create remove list takeover addtasks update "
+
 bro_sed () {
 	if command -v gsed > /dev/null ; then
 		gsed $@
@@ -74,6 +76,12 @@ bro_create_brotasks_directory () {
 	chmod +x $project_path/.brotasks/*
 }
 
+bro_update () {
+	cwd=$(pwd)
+	cd $BRO_STATION
+	git pull origin master
+	cd $cwd
+}
 
 # setup a project
 # like installing dependencies, git, preparing project structure etc
@@ -443,6 +451,9 @@ bro () {
     exit)
       bro_quit
       ;;
+		update)
+			bro_update
+			;;
 		*)
 			bro_task $@
 			;;
@@ -465,7 +476,7 @@ bro_autocomplete_tasks () {
 		fi
 	done
 
-	COMPREPLY=( $(compgen -W '$total_tasks create remove list takeover addtasks exit $projects' -- $cur) )
+	COMPREPLY=( $(compgen -W '$total_tasks $BRO_COMMANDS $projects' -- $cur) )
 }
 
 # autocomplete
@@ -484,7 +495,7 @@ _bro () {
 			tasks_path="./.brotasks"
 			bro_autocomplete_tasks $tasks_path
 		else
-			COMPREPLY=( $(compgen -W 'create remove list takeover addtasks $projects' -- $cur) )
+			COMPREPLY=( $(compgen -W '$BRO_COMMANDS $projects' -- $cur) )
 		fi
 		return 0
 	fi
