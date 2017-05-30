@@ -361,12 +361,12 @@ bro_list () {
 
 # takeover existing projects
 bro_takeover () {
-	if [ ! $# = 2 ] ; then
+	if [ $# = 0 ] ; then
 		bro_takeover_usage
 		return
 	fi
 
-	project_name=$2
+	project_name=$(basename $1)
 	project_reference=$BRO_STATION/projects/$project_name
 	project_path=`cd $1 && pwd`
 
