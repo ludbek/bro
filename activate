@@ -470,7 +470,7 @@ bro_autocomplete_tasks () {
 		lang="${filename##*.}"
 		lang_handler="$BRO_STATION/langs/$lang"
 
-		if [ -f $lang_handler ]; then
+		if [ -f "$lang_handler" ]; then
 			tasks_in_file=$(. $lang_handler get_tasks $file)
 			total_tasks="$total_tasks $tasks_in_file"
 		fi
