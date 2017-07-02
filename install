@@ -33,9 +33,12 @@ if [ "$WORKSTATION" = "" ]; then
 fi
 mkdir -p `bro_expand $WORKSTATION`
 
+backup_directory=~/bro_projects_reference_backup_directory
 # remove borken installation
 if [ -d $BRO_STATION ] ; then
-	echo "\nRemoving broken installation at $BRO_STATION"
+	echo "\nBacking up existing project references."
+	mv $BRO_STATION/projects $backup_directory
+	echo "Removing broken installation at $BRO_STATION"
 	rm -rf $BRO_STATION
 fi
 
@@ -44,6 +47,13 @@ git clone  $bro_repo $BRO_STATION || {
 	echo "Could not install 'bro'. Please report the issue at 'https://github.com/ludbek/bro/issues'."
 	exit 2
 }
+
+if [ -d $backup_directory ]; then
+	echo "Restoring project references."
+	mv $backup_directory $BRO_STATION/projects
+fi
+
+mkdir -p $BRO_STATION/projects
 
 
 # Register 'bro' config files at .bashrc

@@ -1,5 +1,16 @@
 #!/bin/sh
-# 3.5.0
+# 3.5.1
+
+BRO_COMMANDS="create remove list takeover addtasks update "
+
+bro_sed () {
+	if command -v gsed > /dev/null ; then
+		gsed $@
+		return 0
+	fi
+
+	sed $@
+}
 
 bro_expand () {
 	echo `sh -c "echo $1"`
@@ -65,6 +76,12 @@ bro_create_brotasks_directory () {
 	chmod +x $project_path/.brotasks/*
 }
 
+bro_update () {
+	cwd=$(pwd)
+	cd $BRO_STATION
+	git pull origin master
+	cd $cwd
+}
 
 # setup a project
 # like installing dependencies, git, preparing project structure etc
@@ -78,7 +95,7 @@ bro_setup () {
 		return 1
 	fi
 
-	project_path=`bro_expand $(sed '1p' $project_reference)`
+	project_path=`bro_expand $(bro_sed '1p' $project_reference)`
 	cd $project_path
 
 	bro_task $project setup
@@ -104,7 +121,7 @@ bro_remote_task () {
 		return 1
 	fi
 
-	project_path=`bro_expand $(sed '1p' $project_reference)`
+	project_path=`bro_expand $(bro_sed '1p' $project_reference)`
 	cd $project_path
 
 	shift
@@ -189,7 +206,7 @@ bro_task () {
 
 	if [[ $# = 1 ]] && [[ -f "$project_reference" ]]; then
 		# if tmux session exists attach to it
-		if [[ $(tmux ls 2>/dev/null | sed -n "/$possible_project:/p") ]]
+		if [[ $(tmux ls 2>/dev/null | bro_sed -n "/$possible_project:/p") ]]
 		then
 			tmux a -t $possible_project
 			return 0
@@ -241,7 +258,7 @@ bro_create () {
 	if [ "$path" = "" ] ; then
 		project_path=`bro_expand "$WORKSTATION/$project"`
 	else
-		if [ "$(echo $path | sed -n "/[~\/]/p")" = "" ] ; then
+		if [ "$(echo $path | bro_sed -n "/[~\/]/p")" = "" ] ; then
 			mkdir -p `bro_expand "$WORKSTATION/$path"`
 			project_path=`bro_expand "$WORKSTATION/$path/$project"`
 		else
@@ -352,12 +369,12 @@ bro_list () {
 
 # takeover existing projects
 bro_takeover () {
-	if [ ! $# = 2 ] ; then
+	if [ $# = 0 ] ; then
 		bro_takeover_usage
 		return
 	fi
 
-	project_name=$2
+	project_name=$(basename $1)
 	project_reference=$BRO_STATION/projects/$project_name
 	project_path=`cd $1 && pwd`
 
@@ -434,6 +451,9 @@ bro () {
     exit)
       bro_quit
       ;;
+		update)
+			bro_update
+			;;
 		*)
 			bro_task $@
 			;;
@@ -450,13 +470,13 @@ bro_autocomplete_tasks () {
 		lang="${filename##*.}"
 		lang_handler="$BRO_STATION/langs/$lang"
 
-		if [ -f $lang_handler ]; then
-			tasks_in_file=$($lang_handler get_tasks $file)
+		if [ -f "$lang_handler" ]; then
+			tasks_in_file=$(. $lang_handler get_tasks $file)
 			total_tasks="$total_tasks $tasks_in_file"
 		fi
 	done
 
-	COMPREPLY=( $(compgen -W '$total_tasks create remove list takeover addtasks exit $projects' -- $cur) )
+	COMPREPLY=( $(compgen -W '$total_tasks $BRO_COMMANDS $projects' -- $cur) )
 }
 
 # autocomplete
@@ -475,7 +495,7 @@ _bro () {
 			tasks_path="./.brotasks"
 			bro_autocomplete_tasks $tasks_path
 		else
-			COMPREPLY=( $(compgen -W 'create remove list takeover addtasks $projects' -- $cur) )
+			COMPREPLY=( $(compgen -W '$BRO_COMMANDS $projects' -- $cur) )
 		fi
 		return 0
 	fi
@@ -507,7 +527,7 @@ _bro () {
 	if [[ $COMP_CWORD = 2 ]]; then
 		project_reference=`bro_expand "$BRO_STATION/projects/$prev"`
 		if [ -e "$project_reference" ]; then
-			project_path=`bro_expand $(sed '1p' $project_reference)`
+			project_path=`bro_expand $(bro_sed '1p' $project_reference)`
 			tasks_path=$project_path/.brotasks
 			bro_autocomplete_tasks $tasks_path
 		fi
