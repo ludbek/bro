@@ -33,7 +33,7 @@ execute_task() {
 		params="$(echo $@ | sed -r 's/[a-z]+/"&"/g')"
 		params="$(echo $params | sed -e 's/ /,/g')"
 
-		python -c "execfile('$file'); $task($params)"
+		python -c "exec(open('$file').read()); $task($params)"
 	fi
 }
 
