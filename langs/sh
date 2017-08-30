@@ -42,7 +42,7 @@ execute_task() {
 	file=$1
 	task=$2
 
-	pattern="s/\s*($task)\s*\(\s*\)\s*\{\s*$/\1/p" 
+	pattern="s/\s*^($task)\s*\(\s*\)\s*\{\s*$/\1/p" 
 	match="$(bro_sed -nr $pattern $file)" 
 	if [ $task = "$match" ] ; then
 		. $@
