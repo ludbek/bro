@@ -461,8 +461,6 @@ bro () {
 }
 
 bro_autocomplete_tasks () {
-	projects=$(ls $BRO_STATION/projects)
-
 	total_tasks=""
 
 	for file in $1/*; do
@@ -476,7 +474,7 @@ bro_autocomplete_tasks () {
 		fi
 	done
 
-	COMPREPLY=( $(compgen -W '$total_tasks $BRO_COMMANDS $projects' -- $cur) )
+	COMPREPLY=( $(compgen -W '$total_tasks' -- $cur) )
 }
 
 # autocomplete
