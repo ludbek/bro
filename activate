@@ -528,6 +528,7 @@ _bro () {
 			project_path=`bro_expand $(bro_sed '1p' $project_reference)`
 			tasks_path=$project_path/.brotasks
 			bro_autocomplete_tasks $tasks_path
+			return 0
 		fi
 	fi
 
