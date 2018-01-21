@@ -1,5 +1,5 @@
 #!/bin/sh
-# 3.5.2
+# 3.5.3
 
 BRO_COMMANDS="create remove list takeover addtasks update "
 
@@ -345,19 +345,6 @@ bro_remove () {
 	fi
 
 	rm -f $project_reference
-
-	# echo "Yo! are sure you wanna remove $project?"
-	# echo "This will remove the project directory as well."
-	# read -p "Do you still wish to continue? (Y/n):" confirm
-
-	# if [ "$confirm" = "" ] || [ "$confirm" = "y" ] || [ "$confirm" = "Y" ]; then
-	#   rm -rf $project_path
-
-	#   echo "Successfully removed project $project."
-	#   return 0
-	# else
-	#   echo "Aborting operation for good !!!"
-	# fi
 }
 
 
@@ -414,9 +401,19 @@ bro_addtasks () {
 	fi
 }
 
-bro_quit () {
+bro_exit () {
+  if [[ ! -e ".brotasks" ]] ; then
+    echo "Please issue this command inside a project directory."
+    return 0
+  fi
   project=$(basename "`pwd`")
-  tmux kill-session -t $project
+
+	if [[ $(tmux ls 2>/dev/null | bro_sed -n "/$project:/p") ]]
+	then
+		tmux kill-session -t $project
+		return 0
+	fi
+	bro_task exit
 }
 
 bro () {
@@ -449,7 +446,7 @@ bro () {
 			bro_addtasks $@
 			;;
     exit)
-      bro_quit
+      bro_exit
       ;;
 		update)
 			bro_update
