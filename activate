@@ -5,7 +5,7 @@ BRO_COMMANDS="create remove list takeover update"
 
 bro_sed () {
 	if command -v gsed > /dev/null ; then
-		gsed $@
+    gsed $@
 		return 0
 	fi
 
@@ -66,10 +66,72 @@ bro_setup () {
 }
 
 bro_init () {
+  structure () {
+    echo 'structure this project'
+    tmux new -d -s $1
+  }
+
+  window () {
+    tmux new-window -n $1
+  }
+
+  run () {
+    tmux send "$@" ENTER
+  }
+
+  vsplit () {
+    tmux split-window -h -b
+  }
+
+  hsplit () {
+    tmux split-window -b
+  }
+
+  pane () {
+    case $1 in
+      up)
+        tmux select-pane -U
+        ;;
+      right)
+        tmux select-pane -R
+        ;;
+      down)
+        tmux select-pane -D
+        ;;
+      left)
+        tmux select-pane -L
+        ;;
+    esac
+  }
+
+  focus () {
+    if [[ $# = 2 ]]; then
+      tmux select-window -t $1
+      tmux select-pane -t $2
+    elif [[ $# = 1 ]]; then
+      tmux select-window -t $1
+    fi
+  }
+
+  connect () {
+    tmux kill-window -t 0
+    tmux a -t $1
+  }
+
   bro_task init $1
+
+  unset -f structure
+  unset -f window
+  unset -f run
+  unset -f vsplit
+  unset -f hsplit
+  unset -f pane
+  unset -f focus
+  unset -f connect
 }
 
 bro_task () {
+  local task_file
   task=$1
 	project=$2
 	project_reference=`bro_expand "$BRO_STATION/projects/$project"`
@@ -86,18 +148,28 @@ bro_task () {
   if [ -d $task_directory ] ; then
     case $task in
       setup)
-        task_file=$(find $task_directory -type f -name 'setup.*')
+        task_file=$(find $task_directory -type f -name 'setup' -o -name 'setup.*')
         ;;
       init)
-        task_file=$(find $task_directory -type f -name 'init.*')
+        task_file=$(find $task_directory -type f -name 'init' -o -name 'init.*')
+        ;;
+      exit)
+        task_file=$(find $task_directory -type f -name 'exit' -o -name 'exit.*')
         ;;
     esac
   fi
 
-  echo $task_file
   if [ ! -z $task_file ] ; then
     chmod +x $task_file
-    $task_file
+    first_line=$(bro_sed -n '1p' $task_file)
+    case $first_line in
+      '#!/bin/sh'|'#!/bin/bash'|'#!/bin/ksh'|'#!/bin/dash')
+        source $task_file
+        ;;
+      *)
+        $task_file
+        ;;
+    esac
   fi
 }
 
@@ -264,10 +336,6 @@ bro_takeover () {
 
 
 bro_exit () {
-  if [[ ! -e ".brotasks" ]] ; then
-    echo "Please issue this command inside a project directory."
-    return 0
-  fi
   project=$(basename "`pwd`")
 
 	if [[ $(tmux ls 2>/dev/null | bro_sed -n "/$project:/p") ]]
@@ -275,7 +343,7 @@ bro_exit () {
 		tmux kill-session -t $project
 		return 0
 	fi
-	bro_task exit
+	bro_task exit $project
 }
 
 bro () {
@@ -309,6 +377,9 @@ bro () {
 		update)
 			bro_update
 			;;
+    exit)
+      bro_exit
+      ;;
 		*)
 			bro_project $@
 			;;
