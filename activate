@@ -86,16 +86,17 @@ bro_task () {
   if [ -d $task_directory ] ; then
     case $task in
       setup)
-        task_file=$(find $task_directory -type f -name 'setup*')
+        task_file=$(find $task_directory -type f -name 'setup.*')
         ;;
       init)
-        task_file=$(find $task_directory -type f -name 'init*')
+        task_file=$(find $task_directory -type f -name 'init.*')
         ;;
     esac
   fi
 
   echo $task_file
   if [ ! -z $task_file ] ; then
+    chmod +x $task_file
     $task_file
   fi
 }
@@ -325,7 +326,7 @@ _bro () {
 
 	# $ bro
 	if (( $COMP_CWORD <= 1 )); then
-    COMPREPLY=( $(compgen -W '$BRO_COMMANDS' -- $cur) )
+    COMPREPLY=( $(compgen -W '$BRO_COMMANDS $projects' -- $cur) )
 		return 0
 	fi
 
