@@ -80,7 +80,16 @@ bro_task () {
 		return 1
 	fi
 
-  task_file=$(find . -type f -name '$task*')
+  case $task in
+    setup)
+      task_file=$(find ./tasks -type f -name 'setup*')
+      ;;
+    init)
+      task_file=$(find ./tasks -type f -name 'init*')
+      ;;
+  esac
+
+  echo $task_file
   if [ ! -z $task_file ] ; then
     $task_file
   fi
