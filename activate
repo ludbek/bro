@@ -1,5 +1,5 @@
 #!/bin/sh
-# 3.5.3
+# 4.0.0
 
 BRO_COMMANDS="create remove list takeover update"
 
