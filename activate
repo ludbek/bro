@@ -1,5 +1,5 @@
 #!/bin/sh
-# 4.0.0
+# 4.0.1
 
 BRO_COMMANDS="create remove list takeover update"
 
@@ -67,7 +67,6 @@ bro_setup () {
 
 bro_init () {
   structure () {
-    echo 'structure this project'
     tmux new -d -s $1
   }
 
@@ -266,8 +265,9 @@ bro_create () {
 			mkdir -p $project_path
 
 			## copy files from template to project directory
-			cp -a $template_path/. $project_path/
-
+      if [ ! -z "$template_path" ] ; then
+			  cp -a $template_path/. $project_path/
+      fi
 			;;
 	esac
 
