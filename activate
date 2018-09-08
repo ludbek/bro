@@ -1,5 +1,5 @@
 #!/bin/sh
-# 4.0.1
+# 4.1.1
 
 BRO_COMMANDS="create remove list takeover update start"
 
@@ -24,6 +24,7 @@ bro_usage () {
 	echo "Project management: bro <subcommand>"
 	echo "Available subcommands are:"
 	echo "  create     Create a new project."
+	echo "  start      Work on a project."
 	echo "  list       List available projects to work on."
 	echo "  remove     Delete an existing project."
 	echo "  takeover   Let bro handle existing project."
@@ -43,6 +44,10 @@ bro_remove_usage () {
 	echo "  project     Name of the project to be removed."
 }
 
+bro_start_usage () {
+	echo "Usage: bro start <project>"
+	echo "  project     Name of the project to work on."
+}
 
 bro_takeover_usage () {
 	echo "Usage: bro takeover <path> <project>"
@@ -172,8 +177,12 @@ bro_task () {
   fi
 }
 
-bro_project () {
+bro_start () {
   possible_project=$1
+
+  if [ -z $possible_project ] ; then
+    bro_start_usage
+  fi
 	project_reference=`bro_expand "$BRO_STATION/projects/$possible_project"`
 
   if [[ $# = 1 ]] && [[ -f "$project_reference" ]] ; then
@@ -382,7 +391,7 @@ bro () {
       ;;
     start)
 			shift
-			bro_project $@
+			bro_start $@
       ;;
 		*)
       bro_usage
