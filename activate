@@ -1,5 +1,5 @@
 #!/bin/sh
-# 4.1.3
+# 4.2.0
 
 BRO_COMMANDS="create remove list takeover update start"
 
@@ -168,7 +168,6 @@ bro_task () {
     first_line=$(bro_sed -n '1p' $task_file)
 
     # remove task name and project name
-    shift
     shift
 
     case $first_line in
