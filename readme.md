@@ -1,6 +1,13 @@
 ## Bro
 A project bootstrapper.
 
+## Screencasts
+### 1. Creating fresh project
+![bro-example](https://user-images.githubusercontent.com/8296449/50532502-2cf3e400-0b6e-11e9-84af-c5f77a04e5cc.gif)
+
+### 2. Creating a project from remote template
+![bro](https://user-images.githubusercontent.com/8296449/50532391-d5a14400-0b6c-11e9-9d1f-3f57d271f017.gif)
+
 ## Table of content
 
 <!-- vim-markdown-toc GFM -->
@@ -50,9 +57,15 @@ fi
 ### Tmux
 Bro requires tmux 2 and above.
 
+1. Mac
+`brew install tmux`
+
+2. Ubuntu
+`sudo apt-get install tmux`
+
 
 ## Installation
-Issue following commands for installation.
+Run following commands for installation.
 
 ### 1. Download and install bro
 
@@ -91,7 +104,7 @@ $ bro create aproject
 #### -t (optional)
 Template is a generic project structure which can be used to create multiple projects.
 It could be a local directory or a remote git repository. If exists, it executes script
-at `<template-name>/tasks/setup`.
+at `<template-name>/tasks/setup[.ext]`.
 
 ```shell
 # create project from local directory template
