@@ -106,6 +106,8 @@ Template is a generic project structure which can be used to create multiple pro
 It could be a local directory or a remote git repository. If exists, it executes script
 at `<template-name>/tasks/setup[.ext]`.
 
+[Click here for a remote project template.](https://github.com/ludbek/bro-example)
+
 ```shell
 # create project from local directory template
 $ bro create -t /path/to/local/template/ aproject
