@@ -1,6 +1,10 @@
 ## Bro
 A project bootstrapper.
 
+## Possibilities
+- start text editor, terminal, browser, spaceship and more with single command
+- support for tmux allows one to create complex terminal layouts
+
 ## Screencasts
 ### 1. Creating fresh project
 ![bro-example](https://user-images.githubusercontent.com/8296449/50532502-2cf3e400-0b6e-11e9-84af-c5f77a04e5cc.gif)
