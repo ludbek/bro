@@ -48,6 +48,9 @@ A project bootstrapper.
 <!-- vim-markdown-toc -->
 
 ## Requirement
+### OS
+The script works only in Linux and Mac.
+
 ### Mac
 Mac OS needs `gsed`. Install it with `brew install gnu-sed`.
 Also add following lines to `.bash_profile` if not already present.
