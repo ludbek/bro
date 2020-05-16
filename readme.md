@@ -17,8 +17,6 @@ A project bootstrapper.
 <!-- vim-markdown-toc GFM -->
 
 * [Requirement](#requirement)
-  * [Mac](#mac)
-  * [Tmux](#tmux)
 * [Installation](#installation)
   * [1. Download and install bro](#1-download-and-install-bro)
   * [2. Set the directory where bro will reside](#2-set-the-directory-where-bro-will-reside)
