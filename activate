@@ -427,6 +427,18 @@ _bro () {
 		return 0
 	fi
 
+    # if prev == <one of the projects>, look into the init.sh task if exists and display the functions
+    if [[ $(echo $projects | grep $prev) ]]; then
+        project_path=$(cat $BRO_STATION/projects/$prev)
+        init_path=$project_path/tasks/init.sh
+        if [[ -f $init_path ]]; then
+            # look for lines matching '<function name> ()' and omit the '()'
+            output=$(cat $init_path | grep -oE '^([a-z-]+) *\( *\)' | grep -Eo '[a-z][a-z-]+[a-z]')
+            COMPREPLY=( $(compgen -W '$output' -- $cur) )
+        fi
+        return 0
+    fi
+
 	# autocomplete options for create command
 	if [[ "$prev" = "create" ]]; then
 		COMPREPLY=( $(compgen -W '-p -t' -- $cur) )

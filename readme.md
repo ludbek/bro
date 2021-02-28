@@ -32,6 +32,7 @@ A project bootstrapper.
   * [Remove a project](#remove-a-project)
   * [Takeover an existing project](#takeover-an-existing-project)
   * [Exit from a project](#exit-from-a-project)
+* [Auto Completion](#auto-completion)
 * [Tmux](#tmux-1)
   * [structure](#structure)
   * [window](#window)
@@ -186,6 +187,37 @@ To takeover projects in remote repo, use `create` command.
 ### Exit from a project
 One can quit current tmux session with `bro exit` command.
 
+
+## Auto Completion
+All the commands are auto completed by default.
+
+### Auto completion for tasks
+You can have some tasks to be executed inside `<project_root>/tasks/init.sh`.
+Any function within init.sh is automatically displayed as auto completion option.
+
+For example, you want to run docker containers using docker-compose with the command
+`bro start <your_project> start-docker` so that you don't have to manually run the command.
+Then the `init.sh` could be:
+
+```shell
+# $1 is always the project name
+# $2 is what you provide after project name in the bro start command
+action=$2
+
+start-docker () {
+    docker-compose up
+}
+
+# or you want to assemble your android project
+assemble () {
+    cd android
+    ./gradlew assembleDebug
+}
+
+$action
+
+```
+In this case, `start-docker` and `assemble` will appear as auto completion options while starting project.
 
 ## Tmux
 `bro` provides essential apis for intereacting with `tmux`.
