@@ -149,13 +149,16 @@ $ bro create -p web gifhunter
 ```
 
 ### Work on a project
-`$ bro start <project>`
+`$ bro start <project>` [...params]
 
-Takes user to the project directory. It executes the code in `<project-dir>/tasks/init[.ext]` if the file exists (More on this later).
+Takes user to the project directory. It executes the hook at `<project-dir>/tasks/init[.ext]` if it exists (More on this later).
 In then context of above example, to work on the `blog` project, all I have to do is hit following command.
 
 `$ bro start blog`
 
+We can pass parameters to the `<project-dir>/tasks/init[.ext]`. It gives us an ability to differ the way we start a project.
+`$ bro start blog test`
+`$ bro start blog open-aws-console`
 
 ### List projects
 `$ bro list`
