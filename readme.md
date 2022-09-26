@@ -17,6 +17,8 @@ A project bootstrapper.
 <!-- vim-markdown-toc GFM -->
 
 * [Requirement](#requirement)
+  * [OS](#os)
+  * [Tmux](#tmux)
 * [Installation](#installation)
   * [1. Download and install bro](#1-download-and-install-bro)
   * [2. Set the directory where bro will reside](#2-set-the-directory-where-bro-will-reside)
@@ -28,11 +30,13 @@ A project bootstrapper.
     * [-t (optional)](#-t-optional)
     * [-p (optional)](#-p-optional)
   * [Work on a project](#work-on-a-project)
+  * [Jump to a project directory](#jump-to-a-project-directory)
   * [List projects](#list-projects)
   * [Remove a project](#remove-a-project)
   * [Takeover an existing project](#takeover-an-existing-project)
   * [Exit from a project](#exit-from-a-project)
 * [Auto Completion](#auto-completion)
+  * [Auto completion for tasks](#auto-completion-for-tasks)
 * [Tmux](#tmux-1)
   * [structure](#structure)
   * [window](#window)
@@ -50,7 +54,6 @@ A project bootstrapper.
 ### OS
 The script works only in Linux and Mac.
 
-### Mac
 Mac OS needs `gsed`. Install it with `brew install gnu-sed`.
 Also add following lines to `.bash_profile` if not already present.
 
@@ -161,7 +164,7 @@ We can pass parameters to the `<project-dir>/tasks/init[.ext]`. It gives us an a
 `$ bro start blog open-aws-console`
 
 ### Jump to a project directory
-`$bro goto <project>`
+`$bro cd <project>`
 
 It takes us to the project directory. Useful in situations where one wishes to jump to the project directory without
 invoking `init` hook.
