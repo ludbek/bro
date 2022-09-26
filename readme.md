@@ -160,6 +160,12 @@ We can pass parameters to the `<project-dir>/tasks/init[.ext]`. It gives us an a
 `$ bro start blog test`
 `$ bro start blog open-aws-console`
 
+### Jump to a project directory
+`$bro goto <project>`
+
+It takes us to the project directory. Useful in situations where one wishes to jump to the project directory without
+invoking `init` hook.
+
 ### List projects
 `$ bro list`
 

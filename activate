@@ -1,7 +1,7 @@
 #!/bin/sh
 # 4.2.0
 
-BRO_COMMANDS="create remove list takeover update start"
+BRO_COMMANDS="create remove list takeover update start goto"
 
 bro_sed () {
 	if command -v gsed > /dev/null ; then
@@ -17,7 +17,7 @@ bro_expand () {
 }
 
 bro_error () {
-	printf "Aye! $1.\n"
+	printf "Bro! $1.\n"
 }
 
 bro_usage () {
@@ -30,6 +30,11 @@ bro_usage () {
 	echo "  takeover   Let bro handle existing project."
 }
 
+
+bro_goto_usage () {
+	echo "Usage: bro goto <project>"
+	echo "  project     Name of a project."
+}
 
 bro_create_usage () {
 	echo "Usage: bro create [-t template -p path] <project>"
@@ -363,6 +368,21 @@ bro_exit () {
 	bro_task exit $project
 }
 
+bro_goto () {
+  possible_project=$1
+
+  if [ -z $possible_project ] ; then
+    bro_goto_usage
+  fi
+	project_reference=`bro_expand "$BRO_STATION/projects/$possible_project"`
+
+  if [[ -f "$project_reference" ]] ; then
+    cd $(cat $project_reference)
+  else
+    bro_error "The project $possible_project does not exist."
+  fi 
+}
+
 bro () {
 	if [ "$#" = "0" ] ; then
 		bro_usage
@@ -374,6 +394,10 @@ bro () {
 
 	# local OPTIND
 	case $cmd in
+		goto)
+			shift
+			bro_goto $@
+			;;
 		create)
 			shift
 			bro_create $@
@@ -425,6 +449,11 @@ _bro () {
 	if [[ "$prev" = "start" ]]; then
     COMPREPLY=( $(compgen -W '$projects' -- $cur) )
 		return 0
+	fi
+
+	if [[ "$prev" = "goto" ]]; then
+    COMPREPLY=( $(compgen -W '$projects' -- $cur) )
+    return 0
 	fi
 
     # if prev == <one of the projects>, look into the init.sh task if exists and display the functions
